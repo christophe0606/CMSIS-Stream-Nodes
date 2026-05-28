@@ -9,5 +9,5 @@
 extern stream_execution_context_t contexts[NB_APPS];
 extern int currentNetwork;
 
-void stream_configure_and_start();
+int stream_configure_and_start();
 void stream_free_all(bool callerIsRuntimeThread = false);

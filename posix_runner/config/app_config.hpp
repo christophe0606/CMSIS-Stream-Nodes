@@ -5,7 +5,7 @@
 #include "stream_runtime_init.hpp"
 
 extern "C" {
-#include "recorder_params.h"
+#include "app_params.h"
 }
 
 #define CG_BEFORE_BUFFER alignas(16)

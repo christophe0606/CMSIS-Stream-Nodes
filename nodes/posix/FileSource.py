@@ -1,21 +1,20 @@
 from cmsis_stream.cg.scheduler import GenericSource
 
 
-class DebugSource(GenericSource):
-    def __init__(self, name, theType, outputLength, params=None):
+class FileSource(GenericSource):
+    def __init__(self, name, theType, outputLength):
         GenericSource.__init__(self, name, identified=True)
-        self.params = params or {}
         self.addOutput("o", theType, outputLength)
         self.addVariableArg(f"params->{name}")
 
     @property
     def needsHardware(self):
-        return True
+        return False
 
     @property
     def folder(self):
-        return "generic"
+        return "posix"
 
     @property
     def typeName(self):
-        return "DebugSource"
+        return "FileSource"

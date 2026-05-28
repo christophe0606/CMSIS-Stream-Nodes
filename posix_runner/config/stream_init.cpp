@@ -1,10 +1,10 @@
 #include "app_config.hpp"
 
 extern "C" {
-#include "recorder_params.h"
+#include "app_params.h"
 }
 
-#include "scheduler_recorder.h"
+#include "scheduler_app.h"
 
 #include "EventQueue.hpp"
 #include "StreamNode.hpp"
@@ -20,6 +20,8 @@ using namespace arm_cmsis_stream;
 int currentNetwork = 0;
 stream_execution_context_t contexts[NB_APPS];
 EventQueue *queue_app[NB_APPS];
+static HardwareParams hardwareParams;
+static bool hardwareInitialized = false;
 
 static void pause_scheduler_app(const stream_execution_context_t *context)
 {
@@ -45,9 +47,9 @@ static void resume_scheduler_app(const stream_execution_context_t *context)
     }
 }
 
-static void *get_recorder_node(int32_t nodeID)
+static void *get_app_node(int32_t nodeID)
 {
-    return static_cast<void *>(get_scheduler_recorder_node(nodeID));
+    return static_cast<void *>(get_scheduler_app_node(nodeID));
 }
 
 static void handle_error(int32_t origin, int32_t error_code, int32_t info)
@@ -72,9 +74,17 @@ static bool application_handler(int src_node_id, void *data, Event &&evt)
     return true;
 }
 
-void stream_configure_and_start()
+int stream_configure_and_start()
 {
-    int err = stream_init_memory();
+    int err = hardware_params_init(&hardwareParams);
+    if (err != 0) {
+        CMSISSTREAM_LOG_ERR("Error initializing hardware parameters: %d\n", err);
+        return err;
+    }
+    hardwareInitialized = true;
+    app_params_set_hardware(&hardwareParams);
+
+    err = stream_init_memory();
     if (err != 0) {
         CMSISSTREAM_LOG_ERR("Error initializing stream\n");
         goto error;
@@ -91,21 +101,21 @@ void stream_configure_and_start()
                                        application_handler);
     }
 
-    err = init_scheduler_recorder(queue_app[0]);
+    err = init_scheduler_app(queue_app[0], &appParams);
     if (err != CG_SUCCESS) {
-        CMSISSTREAM_LOG_ERR("Error: Failure during scheduler initialization for recorder graph.\n");
+        CMSISSTREAM_LOG_ERR("Error: Failure during scheduler initialization for app graph.\n");
         goto error;
     }
 
     contexts[0] = stream_execution_context_t{
-        scheduler_recorder,
-        reset_fifos_scheduler_recorder,
+        scheduler_app,
+        reset_fifos_scheduler_app,
         pause_scheduler_app,
         resume_scheduler_app,
-        get_recorder_node,
+        get_app_node,
         queue_app[0],
-        STREAM_RECORDER_NB_IDENTIFIED_NODES,
-        STREAM_RECORDER_SCHED_LEN};
+        STREAM_APP_NB_IDENTIFIED_NODES,
+        STREAM_APP_SCHED_LEN};
 
     resume_scheduler_app(&contexts[currentNetwork]);
     if (!stream_start_threads(&contexts[currentNetwork])) {
@@ -113,17 +123,19 @@ void stream_configure_and_start()
         goto error;
     }
 
-    return;
+    return 0;
 
 error:
     CMSISSTREAM_LOG_ERR("Fatal error in main, stopping execution\n");
+    stream_free_all(false);
+    return err != 0 ? err : -1;
 }
 
 void stream_free_all(bool callerIsRuntimeThread)
 {
     stream_stop_threads(callerIsRuntimeThread);
 
-    free_scheduler_recorder();
+    free_scheduler_app();
 
     for (int network = 0; network < NB_APPS; network++) {
         delete queue_app[network];
@@ -131,4 +143,9 @@ void stream_free_all(bool callerIsRuntimeThread)
     }
 
     stream_free_memory();
+
+    if (hardwareInitialized) {
+        hardware_params_uninit(&hardwareParams);
+        hardwareInitialized = false;
+    }
 }

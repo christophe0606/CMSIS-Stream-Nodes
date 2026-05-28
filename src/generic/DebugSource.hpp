@@ -1,6 +1,7 @@
 #pragma once
 
 #include "GenericNodes.hpp"
+#include "app_params.h"
 #include "cg_enums.h"
 
 #include <algorithm>
@@ -15,12 +16,23 @@ class DebugSource final : public arm_cmsis_stream::GenericSource<OUT, outputSamp
     {
     }
 
+    DebugSource(arm_cmsis_stream::FIFOBase<OUT> &dst, const DebugSourceParams &params)
+        : arm_cmsis_stream::GenericSource<OUT, outputSamples>(dst),
+          hw_(params.hw_),
+          value_(static_cast<OUT>(params.value))
+    {
+    }
+
     int run() final
     {
         OUT *output = this->getWriteBuffer();
-        std::fill(output, output + outputSamples, OUT{});
+        std::fill(output, output + outputSamples, value_);
         return CG_SUCCESS;
     }
+
+  private:
+    HardwareParams hw_{};
+    OUT value_{};
 };
 
 } // namespace recorder

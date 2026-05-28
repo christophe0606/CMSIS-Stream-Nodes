@@ -17,8 +17,8 @@ The support classes and code are covered by CMSIS-Stream license.
 #include "IdentifiedNode.hpp"
 #include "EventQueue.hpp"
 #include "GenericNodes.hpp"
-#include "AppNodes_recorder.hpp"
-#include "scheduler_recorder.h"
+#include "AppNodes.hpp"
+#include "scheduler_app.h"
 
 #if !defined(CHECKERROR)
 #define CHECKERROR       if (cgStaticError < 0) \
@@ -111,7 +111,7 @@ Internal ID identification for the nodes
 Node identification
 
 ************/
-static CStreamNode identifiedNodes[STREAM_RECORDER_NB_IDENTIFIED_NODES]={0};
+static CStreamNode identifiedNodes[STREAM_APP_NB_IDENTIFIED_NODES]={0};
 
 CG_BEFORE_FIFO_BUFFERS
 /***********
@@ -123,7 +123,7 @@ FIFO buffers
 
 #define BUFFERSIZE0 128
 CG_BEFORE_BUFFER
-uint8_t stream_recorder_buf0[BUFFERSIZE0]={0};
+uint8_t stream_app_buf0[BUFFERSIZE0]={0};
 
 
 typedef struct {
@@ -140,9 +140,9 @@ static fifos_t fifos={0};
 
 static nodes_t nodes={0};
 
-CStreamNode* get_scheduler_recorder_node(int32_t nodeID)
+CStreamNode* get_scheduler_app_node(int32_t nodeID)
 {
-    if (nodeID >= STREAM_RECORDER_NB_IDENTIFIED_NODES)
+    if (nodeID >= STREAM_APP_NB_IDENTIFIED_NODES)
     {
         return(nullptr);
     }
@@ -153,13 +153,13 @@ CStreamNode* get_scheduler_recorder_node(int32_t nodeID)
     return(&identifiedNodes[nodeID]);
 }
 
-int init_scheduler_recorder(void *evtQueue_)
+int init_scheduler_app(void *evtQueue_,AppParams *params)
 {
     EventQueue *evtQueue = reinterpret_cast<EventQueue *>(evtQueue_);
     (void)evtQueue;
 
     CG_BEFORE_FIFO_INIT;
-    fifos.fifo0 = new (std::nothrow) FIFO<int16_t,FIFOSIZE0,1,0>(stream_recorder_buf0);
+    fifos.fifo0 = new (std::nothrow) FIFO<int16_t,FIFOSIZE0,1,0>(stream_app_buf0);
     if (fifos.fifo0==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -173,16 +173,16 @@ int init_scheduler_recorder(void *evtQueue_)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
-    identifiedNodes[STREAM_RECORDER_SINK_ID]=createStreamNode(*nodes.sink);
-    nodes.sink->setID(STREAM_RECORDER_SINK_ID);
+    identifiedNodes[STREAM_APP_SINK_ID]=createStreamNode(*nodes.sink);
+    nodes.sink->setID(STREAM_APP_SINK_ID);
 
-    nodes.src = new (std::nothrow) DebugSource<int16_t,64>(*(fifos.fifo0));
+    nodes.src = new (std::nothrow) DebugSource<int16_t,64>(*(fifos.fifo0),params->src);
     if (nodes.src==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
-    identifiedNodes[STREAM_RECORDER_SRC_ID]=createStreamNode(*nodes.src);
-    nodes.src->setID(STREAM_RECORDER_SRC_ID);
+    identifiedNodes[STREAM_APP_SRC_ID]=createStreamNode(*nodes.src);
+    nodes.src->setID(STREAM_APP_SRC_ID);
 
 
 /* Subscribe nodes for the event system*/
@@ -203,7 +203,7 @@ int init_scheduler_recorder(void *evtQueue_)
 
 }
 
-void free_scheduler_recorder()
+void free_scheduler_app()
 {
     if (fifos.fifo0!=NULL)
     {
@@ -220,7 +220,7 @@ void free_scheduler_recorder()
     }
 }
 
-void reset_fifos_scheduler_recorder(int all)
+void reset_fifos_scheduler_app(int all)
 {
     if (fifos.fifo0!=NULL)
     {
@@ -229,13 +229,13 @@ void reset_fifos_scheduler_recorder(int all)
    // Buffers are set to zero too
    if (all)
    {
-       std::fill_n(stream_recorder_buf0, BUFFERSIZE0, (uint8_t)0);
+       std::fill_n(stream_app_buf0, BUFFERSIZE0, (uint8_t)0);
    }
 }
 
 
 CG_BEFORE_SCHEDULER_FUNCTION
-uint32_t scheduler_recorder(int *error)
+uint32_t scheduler_app(int *error)
 {
     int cgStaticError=0;
     uint32_t nbSchedule=0;
