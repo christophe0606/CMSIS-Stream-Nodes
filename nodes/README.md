@@ -9,7 +9,7 @@ configuration and use `config.runner` and `config.board` to decide what its
 `folder`, `typeName`, constructor arguments, or other generated properties
 should be.
 
-In `create.py`, configure the application once before constructing nodes:
+In `create.py` for an app, configure the application once before constructing nodes:
 
 ```python
 from examples.common.app import configure_app_from_args, mk_app

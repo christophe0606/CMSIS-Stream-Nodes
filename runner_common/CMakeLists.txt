@@ -77,7 +77,7 @@ set(APP_COMMON_INCLUDE_DIRS
 )
 
 if(TARGET ${APP_TARGET})
-    # Zephyr creates the application target before this common CMake is included.
+    # Some runners create the application target before this common CMake is included.
     target_sources(${APP_TARGET}
         PRIVATE
             ${APP_COMMON_SOURCES}

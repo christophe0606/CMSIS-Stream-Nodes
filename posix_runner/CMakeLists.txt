@@ -16,7 +16,10 @@ get_filename_component(APP_REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
 set(APP_RUNNER "posix" CACHE STRING "CMSIS-Stream runner")
 set(APP_RUNNER_CONFIG_DIR "${CMAKE_CURRENT_LIST_DIR}")
-set(APP_RUNNER_SOURCES "${CMAKE_CURRENT_LIST_DIR}/main.cpp")
 set(APP_RUNNER_LIBRARIES cmsis_stream::posix_runtime)
+
+add_executable(app
+    "${CMAKE_CURRENT_LIST_DIR}/main.cpp"
+)
 
 add_subdirectory("${APP_REPO_ROOT}/runner_common" "${CMAKE_CURRENT_BINARY_DIR}/runner_common")
