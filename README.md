@@ -42,14 +42,14 @@ To know how to install the package, look at CMSIS Stream posix runner README in 
 Below, it is assumed that the package has been installed in `C:/cmake_packages` on Windows. 
 
 ```powershell
-cmake -S examples/recorder -B examples/recorder/build -DCMSIS_STREAM_INSTALL_PREFIX=C:/cmake_packages
-cmake --build examples/recorder/build
+cmake -S posix_runner -B posix_runner/build -DCMSIS_STREAM_INSTALL_PREFIX=C:/cmake_packages
+cmake --build posix_runner/build
 ```
 
 Run:
 
 ```powershell
-.\examples\recorder\build\Debug\recorder.exe
+posix_runner\build\Release\app.exe
 ```
 
 The recorder stream runs until the POSIX runtime is stopped.
