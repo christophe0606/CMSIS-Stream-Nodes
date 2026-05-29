@@ -1,0 +1,17 @@
+build-idx:
+  generated-by: csolution version 2.13.0+p3-g40b6564e
+  cdefault: ${CMSIS_COMPILER_ROOT}/cdefault.yml
+  csolution: CMSIS.csolution.yml
+  cbuild-run: out/CMSIS+SSE-300-MPS3.cbuild-run.yml
+  tmpdir: tmp
+  cprojects:
+    - cproject: src/cmsis_runner.cproject.yml
+  cbuilds:
+    - cbuild: out/cmsis_runner/SSE-300-MPS3/Debug/cmsis_runner.Debug+SSE-300-MPS3.cbuild.yml
+      project: cmsis_runner
+      configuration: .Debug+SSE-300-MPS3
+      messages:
+        info:
+          - CMSIS.cbuild-pack.yml - file is already up-to-date
+          - CMSIS+SSE-300-MPS3.cbuild-run.yml - file generated successfully
+          - cmsis_runner.Debug+SSE-300-MPS3.cbuild.yml - file is already up-to-date

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "app_config.hpp"
 #include "EventQueue.hpp"
 #include "StreamNode.hpp"
 #include "stream_runtime_init.hpp"

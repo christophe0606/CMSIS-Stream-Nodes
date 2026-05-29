@@ -4,7 +4,6 @@
 
 AppParams appParams = {
     .src = {
-        .hw_ = {0},
         .value = 2,
     },
 };

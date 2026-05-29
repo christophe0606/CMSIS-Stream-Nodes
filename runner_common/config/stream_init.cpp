@@ -15,6 +15,10 @@ extern "C" {
 #include <cstdint>
 #include <cstdlib>
 
+#ifndef CMSISSTREAM_FATAL_ERROR
+#define CMSISSTREAM_FATAL_ERROR(code) std::exit(code)
+#endif
+
 using namespace arm_cmsis_stream;
 
 int currentNetwork = 0;
@@ -61,7 +65,7 @@ static void handle_error(int32_t origin, int32_t error_code, int32_t info)
         hardware_params_uninit(&hardwareParams);
         hardwareInitialized = false;
     }
-    std::exit(1);
+    CMSISSTREAM_FATAL_ERROR(1);
 }
 
 static bool application_handler(int src_node_id, void *data, Event &&evt)

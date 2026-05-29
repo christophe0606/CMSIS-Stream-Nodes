@@ -1,0 +1,15 @@
+build-idx:
+  generated-by: csolution version 2.13.0+p3-g40b6564e
+  csolution: Zephyr.csolution.yml
+  cbuild-run: out/Zephyr+AVH-SSE-300.cbuild-run.yml
+  tmpdir: tmp
+  cbuilds:
+    - cbuild: out/Zephyr_runner/AVH-SSE-300/Debug/Zephyr_runner.Debug+AVH-SSE-300.cbuild.yml
+      west: true
+      project: Zephyr_runner
+      configuration: .Debug+AVH-SSE-300
+      messages:
+        info:
+          - Zephyr.cbuild-pack.yml - file is already up-to-date
+          - Zephyr+AVH-SSE-300.cbuild-run.yml - file is already up-to-date
+          - Zephyr_runner.Debug+AVH-SSE-300.cbuild.yml - file is already up-to-date

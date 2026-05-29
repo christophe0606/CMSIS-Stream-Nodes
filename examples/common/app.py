@@ -6,7 +6,9 @@ import subprocess
 from pathlib import Path
 
 RUNNERS = ("zephyr", "posix", "cmsis")
-BOARDS = ("AlifE7", "Linux", "Mac", "Windows")
+BOARDS = ("AlifE7", "Linux", "Mac", "Windows","fvp_cs300")
+REPO_ROOT = Path(__file__).resolve().parents[2]
+COMMON_APP_GRAPH_DIR = REPO_ROOT / "runner_common" / "app_graph"
 
 @dataclass(frozen=True)
 class AppConfig:
@@ -119,8 +121,8 @@ def _node_params(node):
         raise TypeError(f"Parameters for node '{name}' must be a dictionary")
     return params
 
-def _target_dir(runner):
-    return f"../../{_runner_dir(runner)}/app_graph"
+def _target_dir(runner=None):
+    return str(COMMON_APP_GRAPH_DIR)
 
 def _hardware_target(runner, board):
     return f"{runner}/{_board_name(board)}"
@@ -259,8 +261,6 @@ def _gen_params(params, scheduling, runner):
                 print("    .reserved = 0,",file=f)
                 continue
             print(f"    .{node_name} = {{",file=f)
-            if node_data["needs_hardware"]:
-                print("        .hw_ = {0},",file=f)
             for param_name, c_type, literal in node_data["fields"]:
                 print(f"        .{param_name} = {_format_c_literal(literal, c_type)},",file=f)
             if not node_data["needs_hardware"] and not node_data["fields"]:
@@ -307,8 +307,7 @@ def mk_app(the_graph, params={}, config=None, runner=None, board=None):
     runner = config.runner
     board = config.board
 
-    cwd = Path.cwd()
-    target = (cwd / _target_dir(runner)).resolve()
+    target = COMMON_APP_GRAPH_DIR
 
     if not target.exists():
        target.mkdir(parents=True, exist_ok=True)

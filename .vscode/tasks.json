@@ -1,0 +1,28 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMSIS Load+Run",
+            "type": "shell",
+            "command": "FVP_Corstone_SSE-300_Ethos-U55",
+            "options": {
+                "cwd": "${workspaceFolder}/cmsis_runner",
+                "shell": {
+                    "executable": "cmd.exe",
+                    "args": [
+                        "/d",
+                        "/c"
+                    ]
+                }
+            },
+            "args": [
+                "-f",
+                "../boards/cmsis/fvp_cs300/fvp_config.txt",
+                "-a",
+                "out/cmsis_runner/SSE-300-MPS3/Debug/cmsis_runner.elf",
+                ""
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

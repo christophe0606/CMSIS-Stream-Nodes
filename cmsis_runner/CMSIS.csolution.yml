@@ -1,0 +1,70 @@
+# A solution is a collection of related projects that share same base configuration.
+solution:
+  created-for: CMSIS-Toolbox@2.13.0
+  language-C: c11
+  language-CPP: c++17
+  cdefault: # use CMSIS-Toolbox default Compiler options
+
+  # Compilers that can be selected
+  select-compiler:
+    - compiler: AC6
+    - compiler: GCC
+    - compiler: CLANG
+
+  # List of miscellaneous tool-specific controls
+  misc:
+    - for-compiler: AC6 # GDB requires DWARF 5, remove when using uVision Debugger
+      C-CPP:
+        - -gdwarf-5
+      ASM:
+        - -gdwarf-5
+
+  # List the packs that define the device and/or board.
+  packs:
+    - pack: ARM::V2M_MPS3_SSE_300_BSP@1.5.0
+    - pack: ARM::CMSIS@6.3.0
+    - pack: ARM::CMSIS-RTX@5.9.0
+    - pack: ARM::CMSIS-STREAM
+      path: ../../CMSIS-Stream
+
+  # List different hardware targets that are used to deploy the solution.
+  target-types:
+    - type: SSE-300-MPS3
+      board: V2M-MPS3-SSE-300-FVP
+      device: SSE-300-MPS3
+      variables:
+        - cmsis-board-folder: fvp_cs300
+      misc:
+        - for-compiler: CLANG
+          Link:
+            - -lcrt0-semihost
+            - -lsemihost
+        - for-compiler: GCC
+          Link:
+            - --specs=rdimon.specs
+          Library:
+            - -lrdimon
+      target-set:
+        - set:
+          images:
+            - project-context: cmsis_runner.Debug
+          debugger:
+            name: Arm-FVP
+            model: FVP_Corstone_SSE-300_Ethos-U55
+            args: ""
+            config-file: ../boards/cmsis/fvp_cs300/fvp_config.txt
+
+  # List of different build configurations.
+  build-types:
+    - type: Debug
+      debug: on
+      optimize: none
+
+    - type: Release
+      debug: off
+      optimize: balanced
+
+  # List related projects.
+  projects:
+    - project: src/cmsis_runner.cproject.yml
+  compiler: CLANG

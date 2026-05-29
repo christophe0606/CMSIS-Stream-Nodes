@@ -1,0 +1,4 @@
+CompileFlags:
+  CompilationDatabase: >-
+    c:\Users\chrfav01\benchresults\CMSIS-Stream-Nodes\zephyr_runner\out\Zephyr_runner\AVH-SSE-300\Debug
+  Add: []

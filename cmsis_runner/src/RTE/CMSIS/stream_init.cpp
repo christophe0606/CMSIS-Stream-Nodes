@@ -1,0 +1,1 @@
+#include "../runner_common/config/stream_init.cpp"

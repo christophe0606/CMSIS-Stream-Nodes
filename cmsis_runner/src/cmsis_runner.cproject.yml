@@ -1,0 +1,44 @@
+# A project translates into one executable or library.
+project:
+  
+  groups:
+    - group: Main App
+      files:
+        - file: ./main.cpp
+
+    - group: App Graph
+      files:
+        - file: ../../runner_common/app_graph/scheduler_app.cpp
+        - file: ../../runner_common/app_graph/app_params.c
+
+    - group: Board
+      files:
+        - file: ../../boards/cmsis/$cmsis-board-folder$/hardware_params.c
+
+  add-path:
+    - .
+    - ../../runner_common/app_graph
+    - ../../runner_common
+    - ../../boards/cmsis/$cmsis-board-folder$
+    - ../../src
+    
+  # List components to use for your application.
+  # A software component is a re-usable unit that may be configurable.
+  components:
+    - component: ARM::CMSIS:CORE
+    - component: Device:Startup&C Startup
+    - component: CMSIS:OS Tick:SysTick
+    - component: CMSIS:RTOS2:Keil RTX5&Source
+    - component: ARM::CMSIS:STREAM
+    - component: Device:Definition
+    - component: Device:Native Driver:IO
+    - component: Device:Native Driver:SysCounter
+    - component: Device:Native Driver:SysTimer
+    - component: Device:Native Driver:Timeout
+
+  # List executable file formats to be generated.
+  output:
+    type:
+      - elf
+      - hex
+      - map
