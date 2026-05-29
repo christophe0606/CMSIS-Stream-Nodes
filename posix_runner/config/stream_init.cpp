@@ -57,6 +57,10 @@ static void handle_error(int32_t origin, int32_t error_code, int32_t info)
     (void)info;
     CMSISSTREAM_LOG_ERR("Error from origin %d with code %d\n", origin, error_code);
     stream_free_all(true);
+    if (hardwareInitialized) {
+        hardware_params_uninit(&hardwareParams);
+        hardwareInitialized = false;
+    }
     std::exit(1);
 }
 
@@ -128,6 +132,10 @@ int stream_configure_and_start()
 error:
     CMSISSTREAM_LOG_ERR("Fatal error in main, stopping execution\n");
     stream_free_all(false);
+    if (hardwareInitialized) {
+        hardware_params_uninit(&hardwareParams);
+        hardwareInitialized = false;
+    }
     return err != 0 ? err : -1;
 }
 
