@@ -37,7 +37,7 @@ The CMSIS Stream scheduler will be generated in `runner_common/app_graph`. You'l
 
 Configure and build with the installed CMSIS-Stream POSIX runtime package.
 
-To know how to install the package, look at CMSIS Stream posix runner README.
+To know how to install the package, look at CMSIS Stream posix runner README in CMSIS Stream repository.
 
 Below, it is assumed that the package has been installed in `C:/cmake_packages` on Windows. 
 
