@@ -6,7 +6,7 @@
             "type": "shell",
             "command": "FVP_Corstone_SSE-300_Ethos-U55",
             "options": {
-                "cwd": "${workspaceFolder}/zephyr_runner",
+                "cwd": "${workspaceFolder}/cmsis_runner",
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
@@ -17,12 +17,19 @@
             },
             "args": [
                 "-f",
-                "../boards/zephyr/fvp_cs300/fvp_config.txt",
+                "../boards/cmsis/fvp_cs300/fvp_config.txt",
                 "-a",
-                "out/Zephyr_runner/AVH-SSE-300/Debug/zephyr/zephyr.elf",
+                "out/cmsis_runner/SSE-300-MPS3/Debug/cmsis_runner.elf",
                 ""
             ],
             "problemMatcher": []
+        },
+        {
+            "type": "cmake",
+            "label": "CMake: configure",
+            "command": "configure",
+            "problemMatcher": [],
+            "detail": "CMake template configure task"
         }
     ]
 }

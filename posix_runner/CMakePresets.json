@@ -1,0 +1,27 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 22,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "posix-runner",
+      "displayName": "Posix runner",
+      "description": "Configure the standalone Posix CMSIS-Stream runner.",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMSIS_STREAM_INSTALL_PREFIX": "C:/cmake_packages"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "posix-runner",
+      "displayName": "Posix runner",
+      "description": "Build the standalone Posix CMSIS-Stream runner.",
+      "configurePreset": "posix-runner"
+    }
+  ]
+}

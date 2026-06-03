@@ -2,6 +2,7 @@
   "debug.hideSlowPreLaunchWarning": true,
   "debug.showInStatusBar": "never",
   "cmake.ignoreCMakeListsMissing": true,
+  "cmake.sourceDirectory": "${workspaceFolder}/posix_runner",
   "files.associations": {
     "stdio.h": "c",
     "vector": "cpp",
