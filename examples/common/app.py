@@ -94,6 +94,8 @@ def _param_decl_and_value(name, value):
 
     if _is_typed_param(value):
         literal, the_type = value
+        if isinstance(literal, str) and not _is_valid_c_identifier(literal):
+            raise ValueError(f"Invalid C define name for parameter '{name}': {literal!r}")
         if isinstance(literal, bool):
             literal = 1 if literal else 0
         return the_type.ctype, literal

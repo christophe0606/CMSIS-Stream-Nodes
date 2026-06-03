@@ -16,8 +16,9 @@ the_graph = Graph()
 
 sample_type = CType(SINT16)
 block_size = 64
+src_value = 2
 
-src = DebugSource("src", sample_type, block_size,params={"value": 2})
+src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
 sink = DebugSink("sink", sample_type, block_size)
 
 the_graph.connect(src.o, sink.i)
@@ -26,6 +27,7 @@ mk_app(
     the_graph,
     globals={
         "APP_BLOCK_SIZE": block_size,
+        "APP_SRC_VALUE": src_value,
     },
     config=config,
 )

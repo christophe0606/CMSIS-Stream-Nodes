@@ -6,10 +6,11 @@
 #include "hardware_params.h"
 
 #define APP_BLOCK_SIZE 64
+#define APP_SRC_VALUE 2
 
 typedef struct {
     HardwareParams hw_;
-    int32_t value;
+    int16_t value;
 } DebugSourceParams;
 
 typedef struct {

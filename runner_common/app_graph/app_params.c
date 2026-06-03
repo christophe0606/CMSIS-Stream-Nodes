@@ -4,7 +4,7 @@
 
 AppParams appParams = {
     .src = {
-        .value = 2,
+        .value = APP_SRC_VALUE,
     },
 };
 
