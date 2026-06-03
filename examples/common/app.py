@@ -42,9 +42,9 @@ def configure_app_from_args():
     args = parse_app_args()
     return configure_app(runner=args.runner, board=args.board)
 
-def mk_app_from_args(the_graph, params={}):
+def mk_app_from_args(the_graph, params=None, globals=None):
     config = configure_app_from_args()
-    return mk_app(the_graph, params=params, config=config)
+    return mk_app(the_graph, params=params, globals=globals, config=config)
 
 def _runner_dir(runner):
     if runner not in RUNNERS:
@@ -149,8 +149,30 @@ def _format_c_literal(value, c_type):
 
     return str(value)
 
-def _gen_params(params, scheduling, runner):
+def _format_global_define(name, value):
+    if not _is_valid_c_identifier(name):
+        raise ValueError(f"Invalid C macro name for global define: {name!r}")
+
+    if value is None:
+        return None
+
+    if isinstance(value, str):
+        return value
+
+    c_type, literal = _param_decl_and_value(name, value)
+    return _format_c_literal(literal, c_type)
+
+def _global_defines(globals):
+    if globals is None:
+        return []
+    if not isinstance(globals, dict):
+        raise TypeError("Global defines must be a dictionary")
+    return [(name, _format_global_define(name, value)) for name, value in globals.items()]
+
+def _gen_params(params, scheduling, runner, globals=None):
     node_params = {}
+    params = params or {}
+    global_defines = _global_defines(globals)
 
     for node_name, node_values in params.items():
         if not _is_valid_c_identifier(node_name):
@@ -227,6 +249,13 @@ def _gen_params(params, scheduling, runner):
         print("#include <stdint.h>",file=f)
         print("#include \"hardware_params.h\"",file=f)
         print("",file=f)
+        for name, value in global_defines:
+            if value is None:
+                print(f"#define {name}",file=f)
+            else:
+                print(f"#define {name} {value}",file=f)
+        if global_defines:
+            print("",file=f)
         for struct_name, (_, node_data) in struct_defs.items():
             print("typedef struct {",file=f)
             if node_data["needs_hardware"]:
@@ -295,7 +324,7 @@ def _gen_build_config(runner, board):
         print(f"set(APP_GENERATED_BOARD \"{_board_name(board)}\")",file=f)
         print(f"set(APP_GENERATED_HARDWARE_TARGET \"{_hardware_target(runner, board)}\")",file=f)
 
-def mk_app(the_graph, params={}, config=None, runner=None, board=None):
+def mk_app(the_graph, params=None, globals=None, config=None, runner=None, board=None):
     if config is None:
         if runner is None and board is None:
             config = get_app_config()
@@ -336,7 +365,7 @@ def mk_app(the_graph, params={}, config=None, runner=None, board=None):
     scheduling.genJsonSelectorsInit(f"{_target_dir(runner)}/json", conf)
 
     _gen_node_includes(scheduling, runner)
-    _gen_params(params, scheduling, runner)
+    _gen_params(params, scheduling, runner, globals=globals)
     _gen_build_config(runner, board)
     
     with open(f"{_target_dir(runner)}/app.dot", "w") as f:

@@ -22,4 +22,10 @@ sink = DebugSink("sink", sample_type, block_size)
 
 the_graph.connect(src.o, sink.i)
 
-mk_app(the_graph, config=config)
+mk_app(
+    the_graph,
+    globals={
+        "APP_BLOCK_SIZE": block_size,
+    },
+    config=config,
+)

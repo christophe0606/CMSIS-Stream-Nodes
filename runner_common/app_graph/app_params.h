@@ -5,6 +5,8 @@
 #include <stdint.h>
 #include "hardware_params.h"
 
+#define APP_BLOCK_SIZE 64
+
 typedef struct {
     HardwareParams hw_;
     int32_t value;
