@@ -25,14 +25,17 @@ extern "C"
 
 #include "cmsis_os2.h" /* CMSIS-RTOS2 API */
 
-#include "app_params.h"
 
 }
 
 #include "cg_enums.h"
 #include "stream_rtos_events.h"
 
-
+extern "C"
+{
+    #include "datatypes.h"
+    #include "app_params.h"
+}
 
 extern osEventFlagsId_t cg_streamEvent;
 

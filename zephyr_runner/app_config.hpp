@@ -15,6 +15,7 @@
 LOG_MODULE_DECLARE(cmsisstream, CONFIG_CMSISSTREAM_LOG_LEVEL);
 
 extern "C" {
+#include "datatypes.h"
 #include "app_params.h"
 }
 
