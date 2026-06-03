@@ -26,8 +26,18 @@ set(APP_BOARD "" CACHE STRING "Board name to use with the selected runner")
 if(APP_BOARD STREQUAL "")
     if(DEFINED APP_GENERATED_BOARD)
         set(APP_BOARD "${APP_GENERATED_BOARD}")
+    elseif(APP_RUNNER STREQUAL "posix")
+        message(FATAL_ERROR "APP_BOARD must be set for the POSIX runner. Use one of: Windows, Mac, Linux.")
     else()
         set(APP_BOARD "default")
+    endif()
+endif()
+
+if(APP_RUNNER STREQUAL "posix" AND APP_BOARD STREQUAL "default")
+    if(DEFINED APP_GENERATED_BOARD AND NOT APP_GENERATED_BOARD STREQUAL "default")
+        set(APP_BOARD "${APP_GENERATED_BOARD}")
+    else()
+        message(FATAL_ERROR "The POSIX runner has no default board. Use one of: Windows, Mac, Linux.")
     endif()
 endif()
 
@@ -37,12 +47,14 @@ else()
     set(APP_USE_GENERATED_HARDWARE_TARGET FALSE)
 endif()
 
-if(NOT APP_BOARD STREQUAL "default")
-    set(APP_HARDWARE_TARGET "${APP_RUNNER}/${APP_BOARD}" CACHE STRING "Runner/board hardware parameter target")
+if(APP_RUNNER STREQUAL "posix")
+    set(APP_HARDWARE_TARGET "${APP_RUNNER}/${APP_BOARD}" CACHE STRING "Runner/board hardware parameter target" FORCE)
+elseif(NOT APP_BOARD STREQUAL "default")
+    set(APP_HARDWARE_TARGET "${APP_RUNNER}/${APP_BOARD}" CACHE STRING "Runner/board hardware parameter target" FORCE)
 elseif(APP_USE_GENERATED_HARDWARE_TARGET AND DEFINED APP_GENERATED_HARDWARE_TARGET)
-    set(APP_HARDWARE_TARGET "${APP_GENERATED_HARDWARE_TARGET}" CACHE STRING "Runner/board hardware parameter target")
+    set(APP_HARDWARE_TARGET "${APP_GENERATED_HARDWARE_TARGET}" CACHE STRING "Runner/board hardware parameter target" FORCE)
 else()
-    set(APP_HARDWARE_TARGET "${APP_RUNNER}/default" CACHE STRING "Runner/board hardware parameter target")
+    set(APP_HARDWARE_TARGET "${APP_RUNNER}/default" CACHE STRING "Runner/board hardware parameter target" FORCE)
 endif()
 
 set(APP_HARDWARE_DIR "${APP_REPO_ROOT}/boards/${APP_HARDWARE_TARGET}")
@@ -93,6 +105,20 @@ target_include_directories(${APP_TARGET}
     PRIVATE
         ${APP_COMMON_INCLUDE_DIRS}
 )
+
+if(DEFINED APP_RUNNER_INCLUDE_DIRS AND NOT "${APP_RUNNER_INCLUDE_DIRS}" STREQUAL "")
+    target_include_directories(${APP_TARGET}
+        PRIVATE
+            ${APP_RUNNER_INCLUDE_DIRS}
+    )
+endif()
+
+if(DEFINED APP_RUNNER_COMPILE_DEFINITIONS AND NOT "${APP_RUNNER_COMPILE_DEFINITIONS}" STREQUAL "")
+    target_compile_definitions(${APP_TARGET}
+        PRIVATE
+            ${APP_RUNNER_COMPILE_DEFINITIONS}
+    )
+endif()
 
 if(COMMAND zephyr_include_directories)
     zephyr_include_directories(${APP_COMMON_INCLUDE_DIRS})

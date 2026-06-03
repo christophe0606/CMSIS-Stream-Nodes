@@ -41,6 +41,8 @@ To know how to install the cmake package, look at CMSIS Stream posix runner READ
 
 Configure and install the [CMSIS-DSP](https://github.com/ARM-software/CMSIS-DSP) cmake package. Look at CMSIS-DSP README in CMSIS-DSP github repository to see how to build and install the cmake package.
 
+If the graph uses POSIX audio capture nodes such as `MicrophoneSource`, the PortAudio cmake package must also be installed and discoverable by CMake. Without PortAudio, POSIX graphs that do not use audio capture can still build, but microphone capture will not be available.
+
 Below, it is assumed that the packages have been installed in `C:/cmake_packages` on Windows. 
 
 ```powershell

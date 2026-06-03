@@ -9,6 +9,7 @@ if REPO_ROOT.exists() and path_text not in sys.path:
 from cmsis_stream.cg.scheduler import Graph,CType,SINT16
 from examples.common.app import configure_app_from_args, mk_app
 from nodes.generic import DebugSink, DebugSource  
+from nodes.posix import MicrophoneSource
 
 config = configure_app_from_args()
 
@@ -18,7 +19,8 @@ sample_type = CType(SINT16)
 block_size = 64
 src_value = 2
 
-src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
+#src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
+src = MicrophoneSource("src", sample_type, block_size)
 sink = DebugSink("sink", sample_type, block_size)
 
 the_graph.connect(src.o, sink.i)

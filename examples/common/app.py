@@ -2,6 +2,7 @@ from cmsis_stream.cg.scheduler import Configuration
 import argparse
 from dataclasses import dataclass
 import math
+import platform
 import subprocess
 from pathlib import Path
 
@@ -34,6 +35,16 @@ def get_app_config():
 def configure_app(runner="posix", board=None):
     if runner not in RUNNERS:
         raise ValueError(f"Unsupported runner '{runner}'")
+    if runner == "posix" and board is None:
+        system = platform.system()
+        if system == "Windows":
+            board = "Windows"
+        elif system == "Darwin":
+            board = "Mac"
+        elif system == "Linux":
+            board = "Linux"
+        else:
+            raise ValueError(f"Unsupported POSIX host platform '{system}'")
     if board is not None and board not in BOARDS:
         raise ValueError(f"Unsupported board '{board}'")
     return set_app_config(AppConfig(runner=runner, board=board))
