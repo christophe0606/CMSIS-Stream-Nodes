@@ -24,6 +24,7 @@ solution:
     - pack: ARM::V2M_MPS3_SSE_300_BSP@1.5.0
     - pack: ARM::CMSIS@6.3.0
     - pack: ARM::CMSIS-RTX@5.9.0
+    - pack: ARM::CMSIS-DSP@^1.17.0
     - pack: ARM::CMSIS-STREAM
       path: ../../CMSIS-Stream
 

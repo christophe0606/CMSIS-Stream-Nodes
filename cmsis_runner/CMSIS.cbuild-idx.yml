@@ -14,4 +14,4 @@ build-idx:
         info:
           - CMSIS.cbuild-pack.yml - file is already up-to-date
           - CMSIS+SSE-300-MPS3.cbuild-run.yml - file generated successfully
-          - cmsis_runner.Debug+SSE-300-MPS3.cbuild.yml - file is already up-to-date
+          - cmsis_runner.Debug+SSE-300-MPS3.cbuild.yml - file generated successfully
