@@ -6,15 +6,18 @@
 #include "hardware_params.h"
 
 #define APP_BLOCK_SIZE 64
+#define APP_MIC_SAMPLE_RATE 16000
+#define APP_MIC_CHANNELS 1
+#define APP_MIC_FRAMES_PER_BUFFER 0
 #define APP_SRC_VALUE 2
 
 typedef struct {
     HardwareParams hw_;
-    int16_t value;
-} DebugSourceParams;
+    int32_t num_channels;
+} MicrophoneSourceParams;
 
 typedef struct {
-    DebugSourceParams src;
+    MicrophoneSourceParams src;
 } AppParams;
 
 extern AppParams appParams;

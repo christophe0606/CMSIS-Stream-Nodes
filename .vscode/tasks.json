@@ -30,6 +30,17 @@
             "command": "configure",
             "problemMatcher": [],
             "detail": "CMake template configure task"
+        },
+        {
+            "type": "cmake",
+            "label": "CMake: build posix runner",
+            "command": "build",
+            "targets": [
+                "app"
+            ],
+            "problemMatcher": [],
+            "group": "build",
+            "detail": "Build the POSIX runner app target"
         }
     ]
 }

@@ -15,3 +15,15 @@ void hardware_params_uninit(HardwareParams *params)
 {
     (void)params;
 }
+
+int hardware_audio_pause(HardwareParams *params)
+{
+    (void)params;
+    return 0;
+}
+
+int hardware_audio_resume(HardwareParams *params)
+{
+    (void)params;
+    return 0;
+}

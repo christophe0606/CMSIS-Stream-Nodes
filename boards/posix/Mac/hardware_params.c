@@ -1,4 +1,5 @@
 #include "hardware_params.h"
+#include "app_params.h"
 
 #include <string.h>
 
@@ -6,16 +7,19 @@
 #include <portaudio.h>
 #endif
 
+// Typical default: 16000
 #if !defined(APP_MIC_SAMPLE_RATE)
-#define APP_MIC_SAMPLE_RATE 16000
+#error "APP_MIC_SAMPLE_RATE must be defined by the application"
 #endif
 
+// Typical default: 1
 #if !defined(APP_MIC_CHANNELS)
-#define APP_MIC_CHANNELS 1
+#error "APP_MIC_CHANNELS must be defined by the application"
 #endif
 
+// Typical default: 0
 #if !defined(APP_MIC_FRAMES_PER_BUFFER)
-#define APP_MIC_FRAMES_PER_BUFFER 0
+#error "APP_MIC_FRAMES_PER_BUFFER must be defined by the application"
 #endif
 
 int hardware_params_init(HardwareParams *params)
@@ -103,6 +107,30 @@ int hardware_microphone_start(const HardwareParams *params)
 #else
     return -1;
 #endif
+}
+
+int hardware_microphone_pause(const HardwareParams *params)
+{
+    if (params == 0 || params->microphone_stream == 0) {
+        return -1;
+    }
+
+#if defined(CMSIS_STREAM_NODES_USE_PORTAUDIO)
+    PaStream *stream = (PaStream *)params->microphone_stream;
+    if (Pa_IsStreamActive(stream) != 1) {
+        return 0;
+    }
+
+    PaError err = Pa_StopStream(stream);
+    return err == paNoError ? 0 : (int)err;
+#else
+    return -1;
+#endif
+}
+
+int hardware_microphone_resume(const HardwareParams *params)
+{
+    return hardware_microphone_start(params);
 }
 
 int hardware_microphone_read(const HardwareParams *params, float *samples, int32_t frames)

@@ -3,7 +3,7 @@
     "isTemplate": true,
     "selectors": []
   },
-  "DebugSource<int16_t,64>": {
+  "MicrophoneSource<int16_t,64>": {
     "isTemplate": true,
     "selectors": []
   }

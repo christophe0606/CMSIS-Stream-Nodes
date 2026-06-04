@@ -17,6 +17,9 @@ the_graph = Graph()
 
 sample_type = CType(SINT16)
 block_size = 64
+mic_sample_rate = 16000
+mic_channels = 1
+mic_frames_per_buffer = 0
 src_value = 2
 
 #src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
@@ -29,7 +32,11 @@ mk_app(
     the_graph,
     globals={
         "APP_BLOCK_SIZE": block_size,
+        "APP_MIC_SAMPLE_RATE": mic_sample_rate,
+        "APP_MIC_CHANNELS": mic_channels,
+        "APP_MIC_FRAMES_PER_BUFFER": mic_frames_per_buffer,
         "APP_SRC_VALUE": src_value,
     },
     config=config,
+    debug_limit=10
 )

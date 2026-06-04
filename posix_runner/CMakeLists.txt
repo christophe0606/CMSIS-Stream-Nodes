@@ -19,14 +19,6 @@ set(APP_RUNNER "posix" CACHE STRING "CMSIS-Stream runner")
 set(APP_RUNNER_CONFIG_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(APP_RUNNER_LIBRARIES cmsis_stream::posix_runtime CMSISDSP::CMSISDSP)
 set(APP_BOARD "" CACHE STRING "Board name to use with the selected runner")
-set(APP_MIC_SAMPLE_RATE "16000" CACHE STRING "POSIX microphone sample rate")
-set(APP_MIC_CHANNELS "1" CACHE STRING "POSIX microphone channel count")
-set(APP_MIC_FRAMES_PER_BUFFER "0" CACHE STRING "POSIX microphone frames per PortAudio buffer, or 0 for unspecified")
-list(APPEND APP_RUNNER_COMPILE_DEFINITIONS
-    APP_MIC_SAMPLE_RATE=${APP_MIC_SAMPLE_RATE}
-    APP_MIC_CHANNELS=${APP_MIC_CHANNELS}
-    APP_MIC_FRAMES_PER_BUFFER=${APP_MIC_FRAMES_PER_BUFFER}
-)
 
 set(APP_EFFECTIVE_BOARD "${APP_BOARD}")
 if(APP_EFFECTIVE_BOARD STREQUAL "" AND EXISTS "${APP_REPO_ROOT}/runner_common/app_graph/board_config.cmake")
@@ -62,12 +54,18 @@ if(APP_ENABLE_PORTAUDIO_MICROPHONE AND APP_USES_MICROPHONE_SOURCE)
 
     if(TARGET PortAudio::PortAudio)
         list(APPEND APP_RUNNER_LIBRARIES PortAudio::PortAudio)
+        set(APP_PORTAUDIO_TARGET PortAudio::PortAudio)
+        set(APP_PORTAUDIO_RUNTIME_DIRS "$<TARGET_FILE_DIR:PortAudio::PortAudio>")
         list(APPEND APP_RUNNER_COMPILE_DEFINITIONS CMSIS_STREAM_NODES_USE_PORTAUDIO)
     elseif(TARGET portaudio)
         list(APPEND APP_RUNNER_LIBRARIES portaudio)
+        set(APP_PORTAUDIO_TARGET portaudio)
+        set(APP_PORTAUDIO_RUNTIME_DIRS "$<TARGET_FILE_DIR:portaudio>")
         list(APPEND APP_RUNNER_COMPILE_DEFINITIONS CMSIS_STREAM_NODES_USE_PORTAUDIO)
     elseif(TARGET unofficial::portaudio::portaudio)
         list(APPEND APP_RUNNER_LIBRARIES unofficial::portaudio::portaudio)
+        set(APP_PORTAUDIO_TARGET unofficial::portaudio::portaudio)
+        set(APP_PORTAUDIO_RUNTIME_DIRS "$<TARGET_FILE_DIR:unofficial::portaudio::portaudio>")
         list(APPEND APP_RUNNER_COMPILE_DEFINITIONS CMSIS_STREAM_NODES_USE_PORTAUDIO)
     else()
         find_package(PkgConfig QUIET)
@@ -77,6 +75,7 @@ if(APP_ENABLE_PORTAUDIO_MICROPHONE AND APP_USES_MICROPHONE_SOURCE)
 
         if(TARGET PkgConfig::PORTAUDIO)
             list(APPEND APP_RUNNER_LIBRARIES PkgConfig::PORTAUDIO)
+            set(APP_PORTAUDIO_RUNTIME_DIRS ${PORTAUDIO_LIBRARY_DIRS})
             list(APPEND APP_RUNNER_COMPILE_DEFINITIONS CMSIS_STREAM_NODES_USE_PORTAUDIO)
         else()
             message(WARNING "PortAudio was not found; POSIX MicrophoneSource will compile but return underflow at runtime")
@@ -89,3 +88,18 @@ add_executable(app
 )
 
 add_subdirectory("${APP_REPO_ROOT}/runner_common" "${CMAKE_CURRENT_BINARY_DIR}/runner_common")
+
+if(WIN32 AND DEFINED APP_PORTAUDIO_TARGET)
+    add_custom_command(TARGET app POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            $<TARGET_FILE:${APP_PORTAUDIO_TARGET}>
+            $<TARGET_FILE_DIR:app>
+        COMMAND_EXPAND_LISTS
+    )
+endif()
+
+if(UNIX AND DEFINED APP_PORTAUDIO_RUNTIME_DIRS)
+    set_property(TARGET app APPEND PROPERTY
+        BUILD_RPATH "${APP_PORTAUDIO_RUNTIME_DIRS}"
+    )
+endif()

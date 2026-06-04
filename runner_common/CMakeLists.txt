@@ -133,7 +133,7 @@ endif()
 
 if(MSVC)
     set_property(TARGET ${APP_TARGET} PROPERTY
-        MSVC_RUNTIME_LIBRARY "MultiThreadedDLL")
+        MSVC_RUNTIME_LIBRARY "MultiThreaded")
     target_compile_definitions(${APP_TARGET} PRIVATE
         _ITERATOR_DEBUG_LEVEL=0
     )

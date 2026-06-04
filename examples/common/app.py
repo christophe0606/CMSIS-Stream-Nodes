@@ -337,7 +337,7 @@ def _gen_build_config(runner, board):
         print(f"set(APP_GENERATED_BOARD \"{_board_name(board)}\")",file=f)
         print(f"set(APP_GENERATED_HARDWARE_TARGET \"{_hardware_target(runner, board)}\")",file=f)
 
-def mk_app(the_graph, params=None, globals=None, config=None, runner=None, board=None):
+def mk_app(the_graph, params=None, globals=None, config=None, runner=None, board=None,debug_limit=0):
     if config is None:
         if runner is None and board is None:
             config = get_app_config()
@@ -367,6 +367,7 @@ def mk_app(the_graph, params=None, globals=None, config=None, runner=None, board
     conf.appNodesCName = "AppNodes.hpp"
     conf.cOptionalInitArgs = [f"AppParams *params"]
     conf.prefix = "stream_app_"
+    conf.debugLimit = debug_limit
     
     scheduling = the_graph.computeSchedule(config=conf)
     

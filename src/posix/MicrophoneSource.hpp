@@ -53,7 +53,8 @@ inline void copyFromMicrophoneFrames(OUT *output, const float *frames, int frame
 } // namespace detail
 
 template <typename OUT, int outputSamples>
-class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outputSamples> {
+class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outputSamples>,
+                               public ContextSwitch {
     static_assert(detail::isSupportedMicrophoneType<OUT>(),
                   "MicrophoneSource supports float, q15_t, sf32, and sq15 samples");
 
@@ -91,6 +92,19 @@ class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outpu
         std::fill(output + framesRead, output + outputSamples, OUT{});
 
         return CG_SUCCESS;
+    }
+
+    int pause() final
+    {
+        started_ = false;
+        return hardware_microphone_pause(&hw_);
+    }
+
+    int resume() final
+    {
+        const int result = hardware_microphone_resume(&hw_);
+        started_ = result == 0;
+        return result;
     }
 
   private:

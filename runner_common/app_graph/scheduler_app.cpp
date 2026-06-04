@@ -132,7 +132,7 @@ FIFO<int16_t,FIFOSIZE0,1,0> *fifo0;
 
 typedef struct {
     DebugSink<int16_t,64> *sink;
-    DebugSource<int16_t,64> *src;
+    MicrophoneSource<int16_t,64> *src;
 } nodes_t;
 
 
@@ -176,7 +176,7 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_SINK_ID]=createStreamNode(*nodes.sink);
     nodes.sink->setID(STREAM_APP_SINK_ID);
 
-    nodes.src = new (std::nothrow) DebugSource<int16_t,64>(*(fifos.fifo0),params->src);
+    nodes.src = new (std::nothrow) MicrophoneSource<int16_t,64>(*(fifos.fifo0),params->src);
     if (nodes.src==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -239,6 +239,7 @@ uint32_t scheduler_app(int *error)
 {
     int cgStaticError=0;
     uint32_t nbSchedule=0;
+    int32_t debugCounter=10;
 
 
 
@@ -247,7 +248,7 @@ uint32_t scheduler_app(int *error)
 
     /* Run several schedule iterations */
     CG_BEFORE_SCHEDULE;
-    while(cgStaticError==0)
+    while((cgStaticError==0) && (debugCounter > 0))
     {
         /* Run a schedule iteration */
         CG_BEFORE_ITERATION;
@@ -277,6 +278,7 @@ uint32_t scheduler_app(int *error)
             CG_AFTER_NODE_EXECUTION(schedule[id]);
                         CHECKERROR;
         }
+       debugCounter--;
        CG_AFTER_ITERATION;
        nbSchedule++;
     }
