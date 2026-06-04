@@ -4,7 +4,7 @@
 
 AppParams appParams = {
     .src = {
-        .num_channels = 1,
+        .value = APP_SRC_VALUE,
     },
 };
 

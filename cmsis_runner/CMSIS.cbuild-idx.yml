@@ -6,10 +6,14 @@ build-idx:
   tmpdir: tmp
   cprojects:
     - cproject: src/cmsis_runner.cproject.yml
+      clayers:
+        - clayer: src/$Board-Layer$
   cbuilds:
     - cbuild: out/cmsis_runner/SSE-300-MPS3/Debug/cmsis_runner.Debug+SSE-300-MPS3.cbuild.yml
       project: cmsis_runner
       configuration: .Debug+SSE-300-MPS3
+      clayers:
+        - clayer: ../boards/cmsis/fvp_cs300/Board.clayer.yml
       messages:
         info:
           - CMSIS.cbuild-pack.yml - file is already up-to-date

@@ -21,7 +21,7 @@ sink [label=<
 src [label=<
 <TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
-    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">src<BR/>(MicrophoneSource)</FONT></TD>
+    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">src<BR/>(DebugSource)</FONT></TD>
   </TR>
 </TABLE>>];
 

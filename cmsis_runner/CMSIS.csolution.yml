@@ -21,8 +21,6 @@ solution:
 
   # List the packs that define the device and/or board.
   packs:
-    - pack: ARM::V2M_MPS3_SSE_300_BSP@1.5.0
-    - pack: ARM::CMSIS@6.3.0
     - pack: ARM::CMSIS-RTX@5.9.0
     - pack: ARM::CMSIS-DSP@^1.17.0
     - pack: ARM::CMSIS-STREAM
@@ -34,7 +32,7 @@ solution:
       board: V2M-MPS3-SSE-300-FVP
       device: SSE-300-MPS3
       variables:
-        - cmsis-board-folder: fvp_cs300
+        - Board-Layer: ./../../boards/cmsis/fvp_cs300/Board.clayer.yml
       misc:
         - for-compiler: CLANG
           Link:
@@ -52,8 +50,9 @@ solution:
           debugger:
             name: Arm-FVP
             model: FVP_Corstone_SSE-300_Ethos-U55
-            args: ""
             config-file: ../boards/cmsis/fvp_cs300/fvp_config.txt
+            args:
+              - -Cmps3_board.v_path=../boards/cmsis/fvp_cs300/vsi/python/
 
   # List of different build configurations.
   build-types:

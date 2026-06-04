@@ -13,11 +13,11 @@
 
 typedef struct {
     HardwareParams hw_;
-    int32_t num_channels;
-} MicrophoneSourceParams;
+    int16_t value;
+} DebugSourceParams;
 
 typedef struct {
-    MicrophoneSourceParams src;
+    DebugSourceParams src;
 } AppParams;
 
 extern AppParams appParams;

@@ -22,8 +22,8 @@ mic_channels = 1
 mic_frames_per_buffer = 0
 src_value = 2
 
-#src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
-src = MicrophoneSource("src", sample_type, block_size)
+src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
+#src = MicrophoneSource("src", sample_type, block_size)
 sink = DebugSink("sink", sample_type, block_size)
 
 the_graph.connect(src.o, sink.i)

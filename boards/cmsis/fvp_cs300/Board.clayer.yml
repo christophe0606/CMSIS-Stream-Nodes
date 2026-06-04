@@ -1,0 +1,44 @@
+layer:
+  type: Board
+  description: Board setup for AI/ML
+  for-board: ARM::V2M-MPS3-SSE-300-FVP
+  for-device: ARM::SSE-300-MPS3
+
+  
+
+  packs:
+    - pack: ARM::CMSIS@6.3.0
+    - pack: ARM::V2M_MPS3_SSE_300_BSP@1.5.0
+
+  components:
+    - component: ARM::CMSIS:CORE
+
+    - component: ARM::Device:Definition
+    - component: ARM::Device:Startup&C Startup
+
+    - component: ARM::Device:Native Driver:Timeout
+    - component: ARM::Device:Native Driver:SysCounter
+    - component: ARM::Device:Native Driver:SysTimer
+    - component: Device:Native Driver:IO
+
+
+  groups:
+    - group: Board
+      files:
+        - file: hardware_params.c
+
+  add-path:
+    - .
+   
+  linker:
+    - script: ./ac6_linker_script.sct.src
+      regions:  regions_V2M-MPS3-SSE-300-FVP.h
+      for-compiler: AC6
+
+    - script: ./clang_linker_script.ld.src
+      regions:  regions_V2M-MPS3-SSE-300-FVP.h
+      for-compiler: CLANG
+
+    - script: ./gcc_linker_script.ld.src
+      regions:  regions_V2M-MPS3-SSE-300-FVP.h
+      for-compiler: GCC
