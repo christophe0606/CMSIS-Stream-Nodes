@@ -1,1 +1,3 @@
 cmsis-stream
+pyaudio
+opencv-python

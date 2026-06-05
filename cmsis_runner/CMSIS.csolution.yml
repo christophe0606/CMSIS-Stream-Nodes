@@ -51,8 +51,7 @@ solution:
             name: Arm-FVP
             model: FVP_Corstone_SSE-300_Ethos-U55
             config-file: ../boards/cmsis/fvp_cs300/fvp_config.txt
-            args:
-              - -Cmps3_board.v_path=../boards/cmsis/fvp_cs300/vsi/python/
+            
 
   # List of different build configurations.
   build-types:

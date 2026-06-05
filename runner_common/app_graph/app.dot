@@ -21,16 +21,16 @@ sink [label=<
 src [label=<
 <TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
-    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">src<BR/>(DebugSource)</FONT></TD>
+    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">src<BR/>(MicrophoneSource)</FONT></TD>
   </TR>
 </TABLE>>];
 
 
 
-src:i -> sink:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<s16(64)>
-,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >64</FONT>
+src:i -> sink:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<s16(1600)>
+,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1600</FONT>
 </TD></TR></TABLE>>
-,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >64</FONT>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1600</FONT>
 </TD></TR></TABLE>>]
 
 

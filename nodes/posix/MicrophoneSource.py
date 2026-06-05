@@ -1,5 +1,7 @@
 from cmsis_stream.cg.scheduler import GenericSource
 
+from examples.common.app import get_app_config
+
 
 def _microphone_channels(theType):
     ctype = getattr(theType, "ctype", None)
@@ -25,6 +27,9 @@ class MicrophoneSource(GenericSource):
 
     @property
     def folder(self):
+        config = get_app_config()
+        if config.runner == "cmsis":
+            return "cmsis"
         return "posix"
 
     @property

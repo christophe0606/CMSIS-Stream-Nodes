@@ -102,9 +102,8 @@ class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outpu
 
     int resume() final
     {
-        const int result = hardware_microphone_resume(&hw_);
-        started_ = result == 0;
-        return result;
+        started_ = false;
+        return 0;
     }
 
   private:

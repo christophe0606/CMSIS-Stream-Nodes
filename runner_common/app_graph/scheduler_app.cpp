@@ -119,9 +119,9 @@ CG_BEFORE_FIFO_BUFFERS
 FIFO buffers
 
 ************/
-#define FIFOSIZE0 64
+#define FIFOSIZE0 1600
 
-#define BUFFERSIZE0 128
+#define BUFFERSIZE0 3200
 CG_BEFORE_BUFFER
 uint8_t stream_app_buf0[BUFFERSIZE0]={0};
 
@@ -131,8 +131,8 @@ FIFO<int16_t,FIFOSIZE0,1,0> *fifo0;
 } fifos_t;
 
 typedef struct {
-    DebugSink<int16_t,64> *sink;
-    DebugSource<int16_t,64> *src;
+    DebugSink<int16_t,1600> *sink;
+    MicrophoneSource<int16_t,1600> *src;
 } nodes_t;
 
 
@@ -168,7 +168,7 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     CG_BEFORE_NODE_INIT;
     cg_status initError;
 
-    nodes.sink = new (std::nothrow) DebugSink<int16_t,64>(*(fifos.fifo0));
+    nodes.sink = new (std::nothrow) DebugSink<int16_t,1600>(*(fifos.fifo0));
     if (nodes.sink==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -176,7 +176,7 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_SINK_ID]=createStreamNode(*nodes.sink);
     nodes.sink->setID(STREAM_APP_SINK_ID);
 
-    nodes.src = new (std::nothrow) DebugSource<int16_t,64>(*(fifos.fifo0),params->src);
+    nodes.src = new (std::nothrow) MicrophoneSource<int16_t,1600>(*(fifos.fifo0),params->src);
     if (nodes.src==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);

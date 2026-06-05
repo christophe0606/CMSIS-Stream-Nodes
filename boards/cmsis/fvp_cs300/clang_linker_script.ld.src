@@ -249,6 +249,12 @@ SECTIONS
     } >RAM0 AT>RAM0 :ram
     */
 
+    .audio_dma (NOLOAD) : {
+        . = ALIGN(16);
+        *(.bss.audio_dma)
+        . = ALIGN(16);
+    } >RAM2 AT>RAM2 :ram
+
     .bss (NOLOAD) : {
         *(.sbss*)
         *(.gnu.linkonce.sb.*)

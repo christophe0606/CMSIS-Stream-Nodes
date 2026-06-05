@@ -8,18 +8,18 @@
 #endif
 
 // Typical default: 16000
-#if !defined(APP_MIC_SAMPLE_RATE)
-#error "APP_MIC_SAMPLE_RATE must be defined by the application"
+#if !defined(MIC_SAMPLE_RATE)
+#error "MIC_SAMPLE_RATE must be defined by the application"
 #endif
 
 // Typical default: 1
-#if !defined(APP_MIC_CHANNELS)
-#error "APP_MIC_CHANNELS must be defined by the application"
+#if !defined(MIC_CHANNELS)
+#error "MIC_CHANNELS must be defined by the application"
 #endif
 
 // Typical default: 0
-#if !defined(APP_MIC_FRAMES_PER_BUFFER)
-#error "APP_MIC_FRAMES_PER_BUFFER must be defined by the application"
+#if !defined(MIC_FRAMES_PER_BUFFER)
+#error "MIC_FRAMES_PER_BUFFER must be defined by the application"
 #endif
 
 int hardware_params_init(HardwareParams *params)
@@ -28,8 +28,8 @@ int hardware_params_init(HardwareParams *params)
         return -1;
     }
     memset(params, 0, sizeof(*params));
-    params->microphone_sample_rate = APP_MIC_SAMPLE_RATE;
-    params->microphone_num_channels = APP_MIC_CHANNELS;
+    params->microphone_sample_rate = MIC_SAMPLE_RATE;
+    params->microphone_num_channels = MIC_CHANNELS;
 
 #if defined(CMSIS_STREAM_NODES_USE_PORTAUDIO)
     PaError err = Pa_Initialize();
@@ -46,7 +46,7 @@ int hardware_params_init(HardwareParams *params)
     const PaDeviceInfo *device_info = Pa_GetDeviceInfo(device);
     PaStreamParameters input_params;
     input_params.device = device;
-    input_params.channelCount = APP_MIC_CHANNELS;
+    input_params.channelCount = MIC_CHANNELS;
     input_params.sampleFormat = paFloat32;
     input_params.suggestedLatency = device_info != 0 ? device_info->defaultLowInputLatency : 0;
     input_params.hostApiSpecificStreamInfo = 0;
@@ -55,8 +55,8 @@ int hardware_params_init(HardwareParams *params)
     err = Pa_OpenStream(&stream,
                         &input_params,
                         0,
-                        APP_MIC_SAMPLE_RATE,
-                        APP_MIC_FRAMES_PER_BUFFER,
+                        MIC_SAMPLE_RATE,
+                        MIC_FRAMES_PER_BUFFER,
                         paClipOff,
                         0,
                         0);

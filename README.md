@@ -85,3 +85,14 @@ The CMSIS pack for CMSIS Stream has not yet been upstreamed but you can use it f
 And use the path to the CMSIS-Stream github repo that you have cloned.
 
 Then build using vscode and the CMSIS Toolbox extension.
+
+For audio on FVP, the AVH_FVP pack is used. It is not yet
+available on the repository. So you need to clone the github repo: https://github.com/ARM-software/AVH
+
+and then you can use the pack
+
+
+```yaml
+- pack: ARM::AVH_FVP
+  path: ../../AVH
+```

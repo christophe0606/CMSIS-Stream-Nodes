@@ -2,12 +2,15 @@
 #define HARDWARE_PARAMS_H
 
 #include <stdint.h>
-#include <stdlib.h>
+
+#define HARDWARE_MICROPHONE_FRAME_EVENT (1U << 0)
+#define HARDWARE_MICROPHONE_OVERFLOW_EVENT (1U << 1)
 
 typedef struct {
-    float sampling_rate;
-    uint8_t *audio_samples;
-    size_t buffer_size;
+    void *microphone_stream;
+    void *microphone_event;
+    int32_t microphone_sample_rate;
+    int32_t microphone_num_channels;
 } HardwareParams;
 
 int hardware_params_init(HardwareParams *params);
