@@ -37,6 +37,13 @@ This script is available in each example folder. For instance : `examples/record
 
 ## posix
 
+Add this to `.vscode\settings.json` if you want to use the vscode cmake extension woth presets.
+Note that this settings will create conflict with Zephyr build.
+
+```json
+  "cmake.sourceDirectory": "${workspaceFolder}/posix_runner",
+```
+
 Configure and build with the installed CMSIS-Stream POSIX runtime package.
 
 To know how to install the cmake package, look at CMSIS Stream posix runner README in CMSIS Stream repository.
@@ -61,6 +68,15 @@ posix_runner\build\Release\app.exe
 The recorder stream runs until the POSIX runtime is stopped.
 
 # zephyr
+
+Check you don't have this settings:
+
+
+```json
+  "cmake.sourceDirectory": "${workspaceFolder}/posix_runner",
+```
+
+in your `.vscode\settings.json` as it is conflicting with the Zephyr build through CMSIS Toolbox extension.
 
 Add this to the projects in your `west.yml` file:
 
