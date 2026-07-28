@@ -19,5 +19,9 @@
     "ZEPHYR_BASE": "$HOME/benchresults/sdk-alif/zephyr",
     "VIRTUAL_ENV": "$HOME/benchresults/PythonWrapperTests/devenv",
     "PATH": "$HOME/benchresults/PythonWrapperTests/devenv/Scripts"
-  }
+  },
+  "memory-inspector.addressPadding": "32bit",
+  "memory-inspector.groupings.groupsPerRow": "Autofit",
+  "memory-inspector.groupings.MAUsPerGroup": 4,
+  "memory-inspector.scrollingBehavior": "Auto-Append"
 }

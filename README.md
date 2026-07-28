@@ -33,6 +33,8 @@ python create.py --runner zephyr --board fvp_cs300
 
 The CMSIS Stream scheduler will be generated in `runner_common/app_graph`. You'll then have to build the right runner. Even if the scheduler is generated in common it cannot be built for all runners if it uses nodes that are runner and board specific.
 
+This script is available in each example folder. For instance : `examples/recorder/create.py`
+
 ## posix
 
 Configure and build with the installed CMSIS-Stream POSIX runtime package.

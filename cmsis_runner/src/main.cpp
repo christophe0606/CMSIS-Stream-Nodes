@@ -23,7 +23,7 @@ void app_main (void *argument)
 
 int main() {
 
-    printf("Hello, World!\n");
+    printf("CMSIS-RTOS Runner\n");
 
     osStatus_t err = osKernelInitialize();
     if (err != osOK) {
@@ -33,8 +33,6 @@ int main() {
 
     // Configure stream graphs and start the graph selected by currentNetwork.
     osThreadNew(app_main, NULL, NULL);    // Create application main thread
-
-    printf("Start kernel\n");
 
     // Hand control to the RTOS scheduler.
     osKernelStart();

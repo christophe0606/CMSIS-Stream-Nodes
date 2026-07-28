@@ -66,4 +66,4 @@ solution:
   # List related projects.
   projects:
     - project: src/cmsis_runner.cproject.yml
-  compiler: CLANG
+  compiler: AC6

@@ -155,6 +155,7 @@ void AudioIn_Handler (void) {
 /* Initialize streaming interface */
 static int32_t Initialize (vStreamEvent_t event_cb) {
   char *fn;
+  uint32_t file_status;
   uint32_t len;
   uint32_t i;
 
@@ -189,8 +190,10 @@ static int32_t Initialize (vStreamEvent_t event_cb) {
       AudioIn->FILENAME = fn[i];
     }
 
-    if ((AudioIn->STATUS & STATUS_FILE_NAME_Msk) == 0U) {
-      /* File not found */
+    file_status = AudioIn->STATUS;
+    if ((file_status & (STATUS_FILE_NAME_Msk | STATUS_FILE_VALID_Msk)) !=
+        (STATUS_FILE_NAME_Msk | STATUS_FILE_VALID_Msk)) {
+      /* Filename was not received or the file is not valid. */
       return VSTREAM_ERROR;
     }
   }

@@ -4,7 +4,7 @@
 
 int main()
 {
-    std::printf("Recorder POSIX CMSIS-Stream\n");
+    std::printf("Zephyr Runner\n");
 
     int err = stream_configure_and_start();
     if (err != 0) {
