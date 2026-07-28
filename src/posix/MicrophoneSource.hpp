@@ -3,6 +3,7 @@
 #include "GenericNodes.hpp"
 #include "app_params.h"
 #include "cg_enums.h"
+#include "common/MicrophoneSource.hpp"
 #include "datatypes.h"
 #include "dsp/support_functions.h"
 
@@ -14,22 +15,6 @@
 namespace cmsis_stream_nodes {
 
 namespace detail {
-
-template <typename OUT>
-inline constexpr bool isSupportedMicrophoneType()
-{
-    return std::is_same<OUT, float>::value || std::is_same<OUT, q15_t>::value ||
-           std::is_same<OUT, sf32>::value || std::is_same<OUT, sq15>::value;
-}
-
-template <typename OUT>
-inline constexpr int microphoneTypeChannels()
-{
-    if constexpr (std::is_same<OUT, sf32>::value || std::is_same<OUT, sq15>::value) {
-        return 2;
-    }
-    return 1;
-}
 
 template <typename OUT>
 inline void copyFromMicrophoneFrames(OUT *output, const float *frames, int frameCount)

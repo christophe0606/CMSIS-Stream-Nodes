@@ -4,56 +4,13 @@
 #include "app_params.h"
 #include "cg_enums.h"
 #include "cmsis_os2.h"
+#include "common/MicrophoneSource.hpp"
 #include "vstream_audio_in.h"
-#include "datatypes.h"
-#include "dsp/support_functions.h"
 
 #include <algorithm>
-#include <array>
 #include <cstdint>
-#include <cstring>
-#include <type_traits>
 
 namespace cmsis_stream_nodes {
-
-namespace detail {
-
-template <typename OUT>
-inline constexpr bool isSupportedMicrophoneType()
-{
-    return std::is_same<OUT, float>::value || std::is_same<OUT, q15_t>::value ||
-           std::is_same<OUT, sf32>::value || std::is_same<OUT, sq15>::value;
-}
-
-template <typename OUT>
-inline constexpr int microphoneTypeChannels()
-{
-    if constexpr (std::is_same<OUT, sf32>::value || std::is_same<OUT, sq15>::value) {
-        return 2;
-    }
-    return 1;
-}
-
-template <typename OUT, int outputSamples>
-inline void copyFromPcm16(OUT *output, const q15_t *input, int frameCount)
-{
-    if constexpr (std::is_same<OUT, float>::value) {
-        arm_q15_to_float(input, output, static_cast<uint32_t>(frameCount));
-    } else if constexpr (std::is_same<OUT, q15_t>::value) {
-        std::copy_n(input, frameCount, output);
-    } else if constexpr (std::is_same<OUT, sf32>::value) {
-        std::array<float, outputSamples * 2> converted{};
-        arm_q15_to_float(input, converted.data(), static_cast<uint32_t>(frameCount * 2));
-        for (int i = 0; i < frameCount; ++i) {
-            output[i].left = converted[2 * i];
-            output[i].right = converted[2 * i + 1];
-        }
-    } else if constexpr (std::is_same<OUT, sq15>::value) {
-        std::memcpy(output, input, static_cast<size_t>(frameCount) * sizeof(sq15));
-    }
-}
-
-} // namespace detail
 
 template <typename OUT, int outputSamples>
 class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outputSamples>,
@@ -105,7 +62,10 @@ class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outpu
             return CG_BUFFER_UNDERFLOW;
         }
 
-        detail::copyFromPcm16<OUT, outputSamples>(this->getWriteBuffer(), input, outputSamples);
+        detail::copyFromInterleavedPcm16(this->getWriteBuffer(),
+                                         input,
+                                         outputSamples,
+                                         expectedChannels);
         (void)driver()->ReleaseBlock();
         return CG_SUCCESS;
     }

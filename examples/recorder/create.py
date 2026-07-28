@@ -8,8 +8,7 @@ if REPO_ROOT.exists() and path_text not in sys.path:
 
 from cmsis_stream.cg.scheduler import Graph,CType,SINT16
 from examples.common.app import configure_app_from_args, mk_app
-from nodes.generic import DebugSink, DebugSource  
-from nodes.posix import MicrophoneSource
+from nodes.generic import DebugSink, DebugSource, MicrophoneSource
 
 config = configure_app_from_args()
 

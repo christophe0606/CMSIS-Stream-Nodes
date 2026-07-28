@@ -27,10 +27,7 @@ class MicrophoneSource(GenericSource):
 
     @property
     def folder(self):
-        config = get_app_config()
-        if config.runner == "cmsis":
-            return "cmsis"
-        return "posix"
+        return get_app_config().runner
 
     @property
     def typeName(self):
