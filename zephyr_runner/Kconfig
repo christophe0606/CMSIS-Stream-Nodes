@@ -1,0 +1,7 @@
+# Copyright (c) 2026 Arm Limited or its affiliates.
+# SPDX-License-Identifier: Apache-2.0
+
+config NUM_IRQS
+	default 240 if BOARD_MPS3_CORSTONE300_FVP
+
+source "Kconfig.zephyr"

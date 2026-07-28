@@ -4,9 +4,9 @@
         {
             "label": "CMSIS Load+Run",
             "type": "shell",
-            "command": "FVP_Corstone_SSE-300",
+            "command": "FVP_Corstone_SSE-300_Ethos-U55",
             "options": {
-                "cwd": "${workspaceFolder}",
+                "cwd": "${workspaceFolder}/zephyr_runner",
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
@@ -17,9 +17,9 @@
             },
             "args": [
                 "-f",
-                "boards/cmsis/fvp_cs300/fvp_config.txt",
+                "../boards/zephyr/fvp_cs300/fvp_config.txt",
                 "-a",
-                "cmsis_runner/out/cmsis_runner/SSE-300-MPS3/Debug/cmsis_runner.hex",
+                "out/Zephyr_runner/AVH-SSE-300/Debug/zephyr/zephyr.elf",
                 ""
             ],
             "problemMatcher": []

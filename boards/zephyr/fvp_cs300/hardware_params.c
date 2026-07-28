@@ -1,15 +1,74 @@
 #include "hardware_params.h"
+#include "app_params.h"
+
+#include <zephyr/device.h>
+#include <zephyr/devicetree.h>
+#include <zephyr/drivers/i2s.h>
+#include <zephyr/kernel.h>
+
+#if defined(CONFIG_I2S)
+
+#define MICROPHONE_DEVICE DT_ALIAS(i2s_mic)
+#define MICROPHONE_BUFFER_COUNT 2
+
+BUILD_ASSERT((MIC_BLOCK_SIZE % 4) == 0, "MIC_BLOCK_SIZE must be a multiple of 4");
+
+K_MEM_SLAB_DEFINE_STATIC(microphone_mem_slab,
+                         MIC_BLOCK_SIZE,
+                         MICROPHONE_BUFFER_COUNT,
+                         4);
+
+static const struct device *const microphone_device = DEVICE_DT_GET(MICROPHONE_DEVICE);
+
+#endif
 
 int hardware_params_init(HardwareParams *params)
 {
-    if (params == 0) {
+    if (params == NULL) {
         return -1;
     }
+
     *params = (HardwareParams){0};
+
+#if defined(CONFIG_I2S)
+    if (!device_is_ready(microphone_device)) {
+        return -2;
+    }
+
+    const struct i2s_config config = {
+        .word_size = MIC_SAMPLE_SIZE,
+        .channels = MIC_CHANNELS,
+        .format = I2S_FMT_DATA_FORMAT_I2S,
+        .options = I2S_OPT_FRAME_CLK_MASTER | I2S_OPT_BIT_CLK_MASTER,
+        .frame_clk_freq = MIC_SAMPLE_RATE,
+        .mem_slab = &microphone_mem_slab,
+        .block_size = MIC_BLOCK_SIZE,
+        .timeout = SYS_FOREVER_MS,
+    };
+
+    const int result = i2s_configure(microphone_device, I2S_DIR_RX, &config);
+    if (result < 0) {
+        return result;
+    }
+
+    params->microphone_device = microphone_device;
+    params->microphone_mem_slab = &microphone_mem_slab;
+    params->microphone_sample_rate = MIC_SAMPLE_RATE;
+    params->microphone_num_channels = MIC_CHANNELS;
+#endif
+
     return 0;
 }
 
 void hardware_params_uninit(HardwareParams *params)
 {
+#if defined(CONFIG_I2S)
+    if ((params != NULL) && (params->microphone_device != NULL)) {
+        (void)i2s_trigger(params->microphone_device, I2S_DIR_RX, I2S_TRIGGER_DROP);
+        params->microphone_device = NULL;
+        params->microphone_mem_slab = NULL;
+    }
+#else
     (void)params;
+#endif
 }

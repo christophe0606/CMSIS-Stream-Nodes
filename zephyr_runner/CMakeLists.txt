@@ -2,6 +2,7 @@
 
 cmake_minimum_required(VERSION 3.20.0)
 
+get_filename_component(APP_REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
 find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(app LANGUAGES C CXX)
@@ -9,8 +10,6 @@ project(app LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-get_filename_component(APP_REPO_ROOT "${CMAKE_CURRENT_LIST_DIR}/.." ABSOLUTE)
 
 set(APP_RUNNER "zephyr" CACHE STRING "CMSIS-Stream runner")
 set(APP_RUNNER_CONFIG_DIR "${CMAKE_CURRENT_LIST_DIR}")

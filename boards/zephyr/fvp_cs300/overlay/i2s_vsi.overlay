@@ -1,0 +1,16 @@
+/ {
+	aliases {
+		i2s-mic = &vsi_i2s0;
+	};
+
+	vsi_i2s0: i2s@4ff00000 {
+		compatible = "arm,vsi-i2s";
+		reg = <0x4ff00000 0x400>;
+		interrupt-parent = <&nvic>;
+		interrupts = <224 3>;
+		source-file = "examples/recorder/test.wav";
+		#address-cells = <1>;
+		#size-cells = <0>;
+		status = "okay";
+	};
+};

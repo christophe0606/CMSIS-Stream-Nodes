@@ -20,10 +20,6 @@ class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outpu
                                public ContextSwitch {
     static_assert(detail::isSupportedMicrophoneType<OUT>(),
                   "MicrophoneSource supports float, q15_t, sf32, and sq15 samples");
-#if defined(CONFIG_I2S)
-    static_assert(CONFIG_I2S_SAMPLES == outputSamples,
-                  "MicrophoneSource output size must match CONFIG_I2S_SAMPLES");
-#endif
 
   public:
     MicrophoneSource(arm_cmsis_stream::FIFOBase<OUT> &dst, const MicrophoneSourceParams &params)

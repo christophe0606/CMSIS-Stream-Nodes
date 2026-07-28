@@ -1,0 +1,20 @@
+# Copyright (c) 2026 Arm Limited or its affiliates.
+# SPDX-License-Identifier: Apache-2.0
+
+description: Arm Virtual Streaming Interface exposed as an I2S receiver
+
+compatible: "arm,vsi-i2s"
+
+include: i2s-controller.yaml
+
+properties:
+  reg:
+    required: true
+
+  interrupts:
+    required: true
+
+  source-file:
+    type: string
+    required: true
+    description: WAV file passed to the FVP VSI audio model
