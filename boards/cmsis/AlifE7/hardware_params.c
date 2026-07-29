@@ -4,23 +4,23 @@
 #include "cmsis_vstream.h"
 #include "datatypes.h"
 
-#ifndef APP_MIC_SAMPLE_RATE
-#error "APP_MIC_SAMPLE_RATE must be defined by the application"
+#ifndef MIC_SAMPLE_RATE
+#error "MIC_SAMPLE_RATE must be defined by the application"
 #endif
 
-#ifndef APP_MIC_CHANNELS
-#error "APP_MIC_CHANNELS must be defined by the application"
+#ifndef MIC_CHANNELS
+#error "MIC_CHANNELS must be defined by the application"
 #endif
 
-#ifndef APP_BLOCK_SIZE
-#error "APP_BLOCK_SIZE must be defined by the application"
+#ifndef MIC_BLOCK_SIZE
+#error "MIC_BLOCK_SIZE must be defined by the application"
 #endif
 
 #define AUDIO_SOURCE_BLOCK_COUNT (2U)
 
 extern vStreamDriver_t Driver_vStreamAudioIn;
 
-static q15_t audio_buffer[AUDIO_SOURCE_BLOCK_COUNT * APP_BLOCK_SIZE * APP_MIC_CHANNELS];
+static q15_t audio_buffer[AUDIO_SOURCE_BLOCK_COUNT * MIC_BLOCK_SIZE * MIC_CHANNELS];
 static osEventFlagsId_t audio_event = NULL;
 
 static void audio_event_callback(uint32_t event)
@@ -60,7 +60,7 @@ int hardware_params_init(HardwareParams *params)
 
     if (Driver_vStreamAudioIn.SetBuf(audio_buffer,
                                      sizeof(audio_buffer),
-                                     APP_BLOCK_SIZE * APP_MIC_CHANNELS * sizeof(q15_t)) !=
+                                     MIC_BLOCK_SIZE * MIC_CHANNELS * sizeof(q15_t)) !=
         VSTREAM_OK) {
         (void)Driver_vStreamAudioIn.Uninitialize();
         (void)osEventFlagsDelete(audio_event);
@@ -68,10 +68,10 @@ int hardware_params_init(HardwareParams *params)
         return -4;
     }
 
-    params->microphone_stream = &Driver_vStreamAudioIn;
+    params->microphone_stream = (void*)&Driver_vStreamAudioIn;
     params->microphone_event = audio_event;
-    params->microphone_sample_rate = APP_MIC_SAMPLE_RATE;
-    params->microphone_num_channels = APP_MIC_CHANNELS;
+    params->microphone_sample_rate = MIC_SAMPLE_RATE;
+    params->microphone_num_channels = MIC_CHANNELS;
     return 0;
 }
 

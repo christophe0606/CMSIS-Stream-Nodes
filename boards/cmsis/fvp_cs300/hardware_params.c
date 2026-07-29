@@ -28,7 +28,7 @@
 
 #define vStream_AudioIn         (&Driver_vStreamAudioIn)
 
-static uint8_t audio_buffer[MIC_BLOCK_SIZE * AUDIO_BUF_BLOCK_CNT]
+static uint8_t audio_buffer[MIC_BLOCK_SIZE * MIC_CHANNELS * AUDIO_BUF_BLOCK_CNT]
     __attribute__((section(".bss.audio_dma"), aligned(32)));
 static osEventFlagsId_t audio_event = NULL;
 

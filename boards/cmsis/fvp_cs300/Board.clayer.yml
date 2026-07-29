@@ -28,6 +28,7 @@ layer:
     - group: Board
       files:
         - file: hardware_params.c
+        - file: init_board.c
 
     - group: VStream
       files:

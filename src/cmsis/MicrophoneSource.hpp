@@ -5,10 +5,15 @@
 #include "cg_enums.h"
 #include "cmsis_os2.h"
 #include "common/MicrophoneSource.hpp"
-#include "vstream_audio_in.h"
 
 #include <algorithm>
 #include <cstdint>
+
+extern "C" {
+#include "cmsis_vstream.h"
+}
+
+extern vStreamDriver_t Driver_vStreamAudioIn;
 
 namespace cmsis_stream_nodes {
 

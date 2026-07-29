@@ -9,6 +9,7 @@
 extern "C" {
 
 #include "cmsis_os2.h" /* CMSIS-RTOS2 API */
+#include "init_board.h"
 
 }
 
@@ -22,6 +23,8 @@ void app_main (void *argument)
 }
 
 int main() {
+
+    init_board();
 
     printf("CMSIS-RTOS Runner\n");
 

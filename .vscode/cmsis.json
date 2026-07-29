@@ -1,0 +1,7 @@
+{
+    "targetSet": {
+        "cmsis_runner/CMSIS": {
+            "activeTargetType": "AE722F80F55D5LS"
+        }
+    }
+}
