@@ -4,6 +4,7 @@ solution:
 
   packs:
     - pack: ARM::V2M_MPS3_SSE_300_BSP@1.5.0
+    - pack: AlifSemiconductor::Ensemble@^2.0.0-0
 
   target-types:
     - type: AVH-SSE-300
@@ -22,6 +23,24 @@ solution:
             name: Arm-FVP
             model: FVP_Corstone_SSE-300_Ethos-U55
             config-file: ../boards/zephyr/fvp_cs300/fvp_config.txt
+
+    - type: AppKit-E7
+      board: Alif Semiconductor::AppKit-E7-AIML
+      device: Alif Semiconductor::AE722F80F55D5LS
+      variables:
+        # west board selection
+        - west-board: alif_e7_dk/ae722f80f55d5xx/rtss
+      west-defs:
+        - EXTRA_DTC_OVERLAY_FILE: ../boards/zephyr/AlifE7/overlay/alif_e7_dk_rtss_he.overlay
+      target-set:
+        - set:
+          debugger:
+            name: ULINKplus@pyOCD
+            port: 3333
+            protocol: swd
+            clock: 10000000
+          images:
+            - project-context: Zephyr_M55_HE.Debug
 
   build-types:
     - type: Debug
@@ -42,5 +61,10 @@ solution:
         project-id: Zephyr_runner
         app-path: ./
         board: $west-board$
+    - west:
+        project-id: Zephyr_M55_HE
+        app-path: ./
+        board: $west-board$_he
+        device: :M55_HE
 
   compiler: GCC

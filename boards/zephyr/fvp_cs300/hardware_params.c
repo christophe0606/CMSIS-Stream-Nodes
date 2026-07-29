@@ -6,11 +6,33 @@
 #include <zephyr/drivers/i2s.h>
 #include <zephyr/kernel.h>
 
+#ifndef MIC_SAMPLE_RATE
+#error "MIC_SAMPLE_RATE must be defined by the application"
+#endif
+
+#ifndef MIC_CHANNELS
+#error "MIC_CHANNELS must be defined by the application"
+#endif
+
+#ifndef MIC_BLOCK_SIZE
+#error "MIC_BLOCK_SIZE must be defined by the application"
+#endif
+
+#ifndef MIC_SAMPLE_SIZE
+#error "MIC_SAMPLE_SIZE must be defined by the application"
+#endif
+
 #if defined(CONFIG_I2S)
 
 #define MICROPHONE_DEVICE DT_ALIAS(i2s_mic)
 #define MICROPHONE_BUFFER_COUNT 2
 
+BUILD_ASSERT(MIC_SAMPLE_RATE > 0, "MIC_SAMPLE_RATE must be greater than zero");
+BUILD_ASSERT(MIC_SAMPLE_SIZE == 16, "The VSI microphone path supports 16-bit PCM only");
+BUILD_ASSERT((MIC_CHANNELS == 1) || (MIC_CHANNELS == 2),
+             "The microphone source supports one or two channels");
+BUILD_ASSERT((MIC_BLOCK_SIZE % (MIC_CHANNELS * (MIC_SAMPLE_SIZE / 8))) == 0,
+             "MIC_BLOCK_SIZE must contain a whole number of audio frames");
 BUILD_ASSERT((MIC_BLOCK_SIZE % 4) == 0, "MIC_BLOCK_SIZE must be a multiple of 4");
 
 K_MEM_SLAB_DEFINE_STATIC(microphone_mem_slab,

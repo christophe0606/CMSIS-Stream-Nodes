@@ -5,8 +5,7 @@
             "label": "CMSIS Load+Run",
             "problemMatcher": [],
             "dependsOn": [
-                "CMSIS Load",
-                "CMSIS Run"
+                "CMSIS Load"
             ],
             "dependsOrder": "sequence"
         },
@@ -33,7 +32,7 @@
             "type": "shell",
             "command": "pyocd",
             "options": {
-                "cwd": "${workspaceFolder}/cmsis_runner",
+                "cwd": "${workspaceFolder}/zephyr_runner",
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
@@ -56,7 +55,7 @@
             "type": "shell",
             "command": "pyocd",
             "options": {
-                "cwd": "${workspaceFolder}/cmsis_runner",
+                "cwd": "${workspaceFolder}/zephyr_runner",
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
@@ -84,7 +83,7 @@
             "type": "shell",
             "command": "pyocd",
             "options": {
-                "cwd": "${workspaceFolder}/cmsis_runner",
+                "cwd": "${workspaceFolder}/zephyr_runner",
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
@@ -108,7 +107,7 @@
             "type": "shell",
             "command": "pyocd",
             "options": {
-                "cwd": "${workspaceFolder}/cmsis_runner",
+                "cwd": "${workspaceFolder}/zephyr_runner",
                 "shell": {
                     "executable": "cmd.exe",
                     "args": [
