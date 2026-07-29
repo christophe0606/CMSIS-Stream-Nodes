@@ -1,15 +1,13 @@
-# Recorder CMSIS-Stream POSIX Example
+# Recorder example
 
-This is a skeleton CMSIS-Stream POSIX application. Its graph is described from
-Python in `python/create.py` and currently contains a single debug path:
+The recorder is a small CMSIS-Stream application that captures microphone audio and sends each block to a debug sink. Its graph, target selection, and parameters are defined in [`create.py`](create.py).
 
-![recorder graph](recorder_graph/recorder.png)
+Generate the graph from the repository root:
 
-`DebugSource` writes zeros to its output block. `DebugSink` consumes one block
-per scheduler run and prints the total number of samples received so far.
+```powershell
+python examples/recorder/create.py --runner zephyr --board fvp_cs300
+```
 
-The Python node descriptors live in `../../nodes/generic`. The C++ node
-templates live in `../../src/generic` and are included by the generated
-`recorder_graph/AppNodes_recorder.hpp`.
+The generated graph is written to `runner_common/app_graph/` and is then built with the selected runner.
 
-Regenerate the scheduler:
+See [Configuring and generating an application](../../documentation/configuring_application.md) for a step-by-step explanation of this example.

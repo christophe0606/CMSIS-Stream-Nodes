@@ -1,17 +1,17 @@
 build-idx:
   generated-by: csolution version 2.14.1+p38-gf512b381
   csolution: Zephyr.csolution.yml
-  cbuild-run: out/Zephyr+AppKit-E7.cbuild-run.yml
-  tmpdir: tmp/AppKit-E7/default
+  cbuild-run: out/Zephyr+AVH-SSE-300.cbuild-run.yml
+  tmpdir: tmp/AVH-SSE-300/default
   cbuilds:
-    - cbuild: out/Zephyr_M55_HE/AppKit-E7/Debug/Zephyr_M55_HE.Debug+AppKit-E7.cbuild.yml
+    - cbuild: out/Zephyr_runner/AVH-SSE-300/Debug/Zephyr_runner.Debug+AVH-SSE-300.cbuild.yml
       west: true
-      project: Zephyr_M55_HE
-      configuration: .Debug+AppKit-E7
+      project: Zephyr_runner
+      configuration: .Debug+AVH-SSE-300
       messages:
         info:
           - Zephyr.cbuild-pack.yml - file is already up-to-date
-          - Zephyr+AppKit-E7.cbuild-run.yml - file is already up-to-date
-          - Zephyr_M55_HE.Debug+AppKit-E7.cbuild.yml - file is already up-to-date
+          - Zephyr+AVH-SSE-300.cbuild-run.yml - file is already up-to-date
+          - Zephyr_runner.Debug+AVH-SSE-300.cbuild.yml - file is already up-to-date
       packs-unused:
-        - pack: ARM::V2M_MPS3_SSE_300_BSP@1.5.0
+        - pack: AlifSemiconductor::Ensemble@2.1.0

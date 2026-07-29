@@ -1,116 +1,34 @@
-# README
+# CMSIS-Stream Nodes
 
-Collection of nodes to use for building [CMSIS Stream](https://github.com/ARM-software/CMSIS-Stream) graphs.
+Build AI and multimedia processing graphs once and run them across embedded targets and desktop operating systems. This project is based on [CMSIS-Stream](https://github.com/ARM-software/CMSIS-Stream), which describes and generates the scheduled dataflow graph.
 
-Those nodes may be:
+The project adds:
 
-* Audio sources (micro)
-* Audio sinks (speaker)
-* Neural network models (executorch ...)
-* Processing (MFCC, Color conversion ...)
+* Reusable CMSIS-Stream nodes for audio, AI, and multimedia processing
+* A Python-based way to configure the parameters of every node in an application
+* Target-specific implementations and hardware initialization for multiple runners and boards
+* Runner projects for CMSIS-RTOS, Zephyr, Linux, macOS, and Windows
 
-As far as possible, I'll try to create nodes that can work on all platforms:
+Read [How the project works](documentation/principles.md) for the complete graph-description, code-generation, parameter, hardware, runtime-thread, event, and application-integration model.
 
-* CMSIS-RTOS API
-* Zephyr
-* Linux
-* Mac
-* Windows (in some cases)
+## Runners
 
-The project also provides runner to be able to run CMSIS stream graphs on the different platforms:
+Use the runner documentation to configure and build the generated application for a target environment:
 
-* posix_runner
-* zephyr_runner
-* cmsis_runner
+* [POSIX runner](documentation/posix_runner.md)
+* [Zephyr runner](documentation/zephyr_runner.md)
+* [CMSIS runner](documentation/cmsis_runner.md)
 
 ## Configuration
 
 When you generate code for a graph, you need to select the runner and the board.
 
 ```bash
-python create.py --runner zephyr --board fvp_cs300
+python examples/recorder/create.py --runner zephyr --board fvp_cs300
 ```
 
-The CMSIS Stream scheduler will be generated in `runner_common/app_graph`. You'll then have to build the right runner. Even if the scheduler is generated in common it cannot be built for all runners if it uses nodes that are runner and board specific.
+The CMSIS-Stream scheduler will be generated in `runner_common/app_graph`. You'll then have to build the right runner. Even if the scheduler is generated in common, it cannot be built for all runners if it uses nodes that are runner- or board-specific.
 
-This script is available in each example folder. For instance : `examples/recorder/create.py`
+This script is available in each example folder. For instance: `examples/recorder/create.py`.
 
-## posix
-
-Add this to `.vscode\settings.json` if you want to use the vscode cmake extension woth presets.
-Note that this settings will create conflict with Zephyr build.
-
-```json
-  "cmake.sourceDirectory": "${workspaceFolder}/posix_runner",
-```
-
-Configure and build with the installed CMSIS-Stream POSIX runtime package.
-
-To know how to install the cmake package, look at CMSIS Stream posix runner README in CMSIS Stream repository.
-
-Configure and install the [CMSIS-DSP](https://github.com/ARM-software/CMSIS-DSP) cmake package. Look at CMSIS-DSP README in CMSIS-DSP github repository to see how to build and install the cmake package.
-
-If the graph uses POSIX audio capture nodes such as `MicrophoneSource`, the PortAudio cmake package must also be installed and discoverable by CMake. Without PortAudio, POSIX graphs that do not use audio capture can still build, but microphone capture will not be available.
-
-Below, it is assumed that the packages have been installed in `C:/cmake_packages` on Windows. 
-
-```powershell
-cmake -S posix_runner -B posix_runner/build -DCMSIS_STREAM_INSTALL_PREFIX=C:/cmake_packages
-cmake --build posix_runner/build
-```
-
-Run:
-
-```powershell
-posix_runner\build\Release\app.exe
-```
-
-The recorder stream runs until the POSIX runtime is stopped.
-
-# zephyr
-
-Check you don't have this settings:
-
-
-```json
-  "cmake.sourceDirectory": "${workspaceFolder}/posix_runner",
-```
-
-in your `.vscode\settings.json` as it is conflicting with the Zephyr build through CMSIS Toolbox extension.
-
-Add this to the projects in your `west.yml` file:
-
-
-
-```yaml
-- name: cmsisstream
-  url: https://github.com/ARM-software/CMSIS-Stream
-  revision: main
-  path: modules/lib/cmsisstream
-```
-
-Then build using vscode and the CMSIS Toolbox extension.
-
-# cmsis
-
-The CMSIS pack for CMSIS Stream has not yet been upstreamed but you can use it from your `csolution` file with something like:
-
-```yaml
-- pack: ARM::CMSIS-STREAM
-  path: ../../CMSIS-Stream
-```
-
-And use the path to the CMSIS-Stream github repo that you have cloned.
-
-Then build using vscode and the CMSIS Toolbox extension.
-
-For audio on FVP, the AVH_FVP pack is used. It is not yet
-available on the repository. So you need to clone the github repo: https://github.com/ARM-software/AVH
-
-and then you can use the pack
-
-
-```yaml
-- pack: ARM::AVH_FVP
-  path: ../../AVH
-```
+See [Configuring and generating an application](documentation/configuring_application.md) for a recorder-based walkthrough. The [project principles](documentation/principles.md#generating-and-building-an-application) explain how generation selects node implementations and board support.

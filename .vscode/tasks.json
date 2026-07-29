@@ -5,7 +5,8 @@
             "label": "CMSIS Load+Run",
             "problemMatcher": [],
             "dependsOn": [
-                "CMSIS Load"
+                "CMSIS Load",
+                "CMSIS Run"
             ],
             "dependsOrder": "sequence"
         },
@@ -30,7 +31,7 @@
         {
             "label": "CMSIS Load",
             "type": "shell",
-            "command": "pyocd",
+            "command": "echo CMSIS Load: images are loaded by the FVP model when CMSIS Run starts.",
             "options": {
                 "cwd": "${workspaceFolder}/zephyr_runner",
                 "shell": {
@@ -41,19 +42,12 @@
                     ]
                 }
             },
-            "problemMatcher": [],
-            "args": [
-                "load",
-                "--probe",
-                "cmsisdap:",
-                "--cbuild-run",
-                "${command:cmsis-csolution.getCbuildRunFile}"
-            ]
+            "problemMatcher": []
         },
         {
             "label": "CMSIS Run",
             "type": "shell",
-            "command": "pyocd",
+            "command": "FVP_Corstone_SSE-300_Ethos-U55",
             "options": {
                 "cwd": "${workspaceFolder}/zephyr_runner",
                 "shell": {
@@ -65,61 +59,10 @@
                 }
             },
             "args": [
-                "gdbserver",
-                "--probe",
-                "cmsisdap:",
-                "--persist",
-                "--reset-run",
-                "--cbuild-run",
-                "${command:cmsis-csolution.getCbuildRunFile}",
-                "--quiet",
-                "--log",
-                "*.cbuild_run,*server=info"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "CMSIS Erase",
-            "type": "shell",
-            "command": "pyocd",
-            "options": {
-                "cwd": "${workspaceFolder}/zephyr_runner",
-                "shell": {
-                    "executable": "cmd.exe",
-                    "args": [
-                        "/d",
-                        "/c"
-                    ]
-                }
-            },
-            "args": [
-                "erase",
-                "--probe",
-                "cmsisdap:",
-                "--chip",
-                "--cbuild-run",
-                "${command:cmsis-csolution.getCbuildRunFile}"
-            ],
-            "problemMatcher": []
-        },
-        {
-            "label": "CMSIS TargetInfo",
-            "type": "shell",
-            "command": "pyocd",
-            "options": {
-                "cwd": "${workspaceFolder}/zephyr_runner",
-                "shell": {
-                    "executable": "cmd.exe",
-                    "args": [
-                        "/d",
-                        "/c"
-                    ]
-                }
-            },
-            "args": [
-                "list",
-                "--cbuild-run",
-                "${command:cmsis-csolution.getCbuildRunFile}"
+                "-f",
+                "../boards/zephyr/fvp_cs300/fvp_config.txt",
+                "-a",
+                "out/Zephyr_runner/AVH-SSE-300/Debug/zephyr/zephyr.elf"
             ],
             "problemMatcher": []
         }
