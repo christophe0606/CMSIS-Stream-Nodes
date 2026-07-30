@@ -14,6 +14,8 @@
 #include <zephyr/irq.h>
 #include <zephyr/kernel.h>
 
+#include "i2s_vsi.h"
+
 #define VSI_CONTROL_ENABLE BIT(0)
 #define VSI_CONTROL_CONTINUOUS BIT(2)
 
@@ -74,12 +76,12 @@ struct vsi_rx_block {
 
 struct vsi_i2s_config {
 	struct vsi_registers *registers;
-	const char *source_file;
 	void (*irq_configure)(const struct device *dev);
 };
 
 struct vsi_i2s_data {
 	struct i2s_config rx_config;
+	const char *file_path;
 	enum vsi_i2s_state state;
 	void *active_block;
 	bool stop_pending;
@@ -222,7 +224,12 @@ static int vsi_i2s_configure(const struct device *dev,
 	config->registers->regs[5] = i2s_config->frame_clk_freq;
 	config->registers->regs[6] = i2s_config->word_size;
 
-	for (const char *character = config->source_file; *character != '\0'; ++character) {
+	if (data->file_path == NULL) {
+		memset(&data->rx_config, 0, sizeof(data->rx_config));
+		return -EINVAL;
+	}
+
+	for (const char *character = data->file_path; *character != '\0'; ++character) {
 		config->registers->regs[3] = (uint8_t)*character;
 	}
 	config->registers->regs[3] = 0U;
@@ -364,6 +371,26 @@ static DEVICE_API(i2s, vsi_i2s_driver_api) = {
 	.write = vsi_i2s_write,
 };
 
+int vsi_i2s_set_file_path(const struct device *dev, const char *file_path)
+{
+	struct vsi_i2s_data *data;
+
+	if ((dev == NULL) || (file_path == NULL) || (file_path[0] == '\0')) {
+		return -EINVAL;
+	}
+	if (dev->api != &vsi_i2s_driver_api) {
+		return -ENOTSUP;
+	}
+
+	data = dev->data;
+	if ((data->state != VSI_I2S_NOT_READY) && (data->state != VSI_I2S_READY)) {
+		return -EBUSY;
+	}
+
+	data->file_path = file_path;
+	return 0;
+}
+
 static int vsi_i2s_init(const struct device *dev)
 {
 	const struct vsi_i2s_config *config = dev->config;
@@ -397,7 +424,6 @@ static int vsi_i2s_init(const struct device *dev)
 	static struct vsi_i2s_data vsi_i2s_data_##instance;                                        \
 	static const struct vsi_i2s_config vsi_i2s_config_##instance = {                            \
 		.registers = (struct vsi_registers *)DT_INST_REG_ADDR(instance),                     \
-		.source_file = DT_INST_PROP(instance, source_file),                                   \
 		.irq_configure = vsi_i2s_irq_configure_##instance,                                    \
 	};                                                                                          \
 	DEVICE_DT_INST_DEFINE(instance,                                                             \

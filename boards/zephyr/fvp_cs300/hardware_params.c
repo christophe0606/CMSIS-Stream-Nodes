@@ -6,6 +6,8 @@
 #include <zephyr/drivers/i2s.h>
 #include <zephyr/kernel.h>
 
+#include "i2s_vsi.h"
+
 #ifndef MIC_SAMPLE_RATE
 #error "MIC_SAMPLE_RATE must be defined by the application"
 #endif
@@ -20,6 +22,10 @@
 
 #ifndef MIC_SAMPLE_SIZE
 #error "MIC_SAMPLE_SIZE must be defined by the application"
+#endif
+
+#ifndef VSI0_FILE_PATH
+#error "VSI0_FILE_PATH must be defined by the application"
 #endif
 
 #if defined(CONFIG_I2S)
@@ -68,7 +74,12 @@ int hardware_params_init(HardwareParams *params)
         .timeout = SYS_FOREVER_MS,
     };
 
-    const int result = i2s_configure(microphone_device, I2S_DIR_RX, &config);
+    int result = vsi_i2s_set_file_path(microphone_device, VSI0_FILE_PATH);
+    if (result < 0) {
+        return result;
+    }
+
+    result = i2s_configure(microphone_device, I2S_DIR_RX, &config);
     if (result < 0) {
         return result;
     }

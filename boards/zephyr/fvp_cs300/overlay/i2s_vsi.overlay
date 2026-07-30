@@ -8,9 +8,14 @@
 		reg = <0x4ff00000 0x400>;
 		interrupt-parent = <&nvic>;
 		interrupts = <224 3>;
-		source-file = "examples/recorder/test.wav";
 		#address-cells = <1>;
 		#size-cells = <0>;
 		status = "okay";
 	};
+};
+
+
+
+&ethosu0 {
+	status = "okay";
 };

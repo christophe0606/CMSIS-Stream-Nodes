@@ -19,6 +19,8 @@
 #ifndef VSTREAM_AUDIO_IN_CONFIG_H_
 #define VSTREAM_AUDIO_IN_CONFIG_H_
 
+#include "app_params.h"
+
 //-------- <<< Use Configuration Wizard in Context Menu >>> --------------------
 //------ With VS Code: Open Preview for Configuration Wizard -------------------
 
@@ -54,7 +56,7 @@
 // <i> Defines the name of the audio file to be used for streaming.
 // <i> Default: "" (use streaming device instead of file)
 #ifndef AUDIO_IN_FILENAME
-#define AUDIO_IN_FILENAME         "examples/recorder/test.wav"
+#define AUDIO_IN_FILENAME         VSI0_FILE_PATH
 #endif
 
 #endif

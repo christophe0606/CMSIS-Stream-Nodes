@@ -19,3 +19,4 @@ mps3_board.telnetterminal2.quiet=1                    # (bool  , init-time) defa
 mps3_board.telnetterminal2.start_telnet=0             # (bool  , init-time) default = '1'      : Start telnet if nothing connected
 mps3_board.telnetterminal5.quiet=1                    # (bool  , init-time) default = '0'      : Avoid output on stdout/stderr
 mps3_board.telnetterminal5.start_telnet=0
+ethosu.num_macs=128

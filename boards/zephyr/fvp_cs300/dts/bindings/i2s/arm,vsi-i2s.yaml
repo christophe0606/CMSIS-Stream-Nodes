@@ -13,8 +13,3 @@ properties:
 
   interrupts:
     required: true
-
-  source-file:
-    type: string
-    required: true
-    description: WAV file passed to the FVP VSI audio model

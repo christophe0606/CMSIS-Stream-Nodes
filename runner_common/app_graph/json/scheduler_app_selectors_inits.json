@@ -1,9 +1,9 @@
 {
-  "DebugSink<int16_t,1600>": {
+  "DebugSink<int16_t,320>": {
     "isTemplate": true,
     "selectors": []
   },
-  "MicrophoneSource<int16_t,1600>": {
+  "MicrophoneSource<int16_t,320>": {
     "isTemplate": true,
     "selectors": []
   }

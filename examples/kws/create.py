@@ -14,28 +14,38 @@ config = configure_app_from_args()
 
 the_graph = Graph()
 
+# Mono sample datatype for KWS application
 sample_type = CType(SINT16)
+AUDIO_PACKET_DURATION = 20 # ms 
+OVERLAP_DURATION = 20 
+WINDOWS_DURATION = 40 
+
 mic_sample_rate = 16000
-block_size = (mic_sample_rate // 10)  # 100ms of audio
+# Stereo source for microphone hardware, but only one channel is used for the KWS application
 mic_channels = 2
 mic_frames_per_buffer = 0 # only used for posix portaudio
-src_value = 2
+
+
+
+NB_AUDIO_SAMPLES = int(1e-3 * AUDIO_PACKET_DURATION * mic_sample_rate)
+NB_OVERLAP_SAMPLES = int(1e-3 * OVERLAP_DURATION * mic_sample_rate)
+NB_WINDOW_SAMPLES = int(1e-3 * WINDOWS_DURATION * mic_sample_rate)
+
 
 #src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
-src = MicrophoneSource("src", sample_type, block_size)
-sink = DebugSink("sink", sample_type, block_size)
+src = MicrophoneSource("src", sample_type, NB_AUDIO_SAMPLES)
+sink = DebugSink("sink", sample_type, NB_AUDIO_SAMPLES)
 
 the_graph.connect(src.o, sink.i)
 
 mk_app(
     the_graph,
     globals={
-        "MIC_BLOCK_SIZE": block_size* sample_type.bytes,
+        "MIC_BLOCK_SIZE": NB_AUDIO_SAMPLES * sample_type.bytes,
         "MIC_SAMPLE_RATE": mic_sample_rate,
         "MIC_CHANNELS": mic_channels,
         "MIC_FRAMES_PER_BUFFER": mic_frames_per_buffer,
         "MIC_SAMPLE_SIZE" :  sample_type.bytes * 8,
-        "APP_SRC_VALUE": src_value,
         "VSI0_FILE_PATH": '"examples/assets/sample_audio.wav"',
     },
     config=config,
