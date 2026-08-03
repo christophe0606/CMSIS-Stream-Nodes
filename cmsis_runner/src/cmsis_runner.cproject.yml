@@ -16,6 +16,9 @@ project:
     - ../../runner_common/app_graph
     - ../../runner_common
     - ../../src
+
+  layers:
+    - layer: ../src/Nodes.clayer.yml
     
   # List components to use for your application.
   # A software component is a re-usable unit that may be configurable.

@@ -5,4 +5,5 @@ tmp/
 build-codex-check/
 runner_common/.clangd
 run.sh
+run.bat
 *.stackdump

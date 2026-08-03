@@ -77,6 +77,8 @@ set(APP_COMMON_SOURCES
     "${CMAKE_CURRENT_LIST_DIR}/app_graph/scheduler_app.cpp"
     ${APP_C_SOURCES}
     ${APP_BOARD_C_SOURCES}
+    "${APP_REPO_ROOT}/networks/network.cpp"
+    "${APP_REPO_ROOT}/networks/${APP_GENERATED_NETWORK}"
 )
 
 set(APP_COMMON_INCLUDE_DIRS
@@ -87,6 +89,7 @@ set(APP_COMMON_INCLUDE_DIRS
     "${APP_HARDWARE_DIR}"
     "${APP_REPO_ROOT}/src"
     "${APP_REPO_ROOT}/src/csrc"
+    "${APP_REPO_ROOT}/networks"
 )
 
 if(TARGET ${APP_TARGET})

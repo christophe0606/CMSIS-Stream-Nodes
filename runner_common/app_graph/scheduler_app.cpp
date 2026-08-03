@@ -91,9 +91,9 @@ using namespace arm_cmsis_stream;
 Description of the scheduling. 
 
 */
-static uint8_t schedule[2]=
+static uint8_t schedule[6]=
 { 
-1,0,
+4,5,0,1,2,3,
 };
 
 /*
@@ -101,9 +101,19 @@ static uint8_t schedule[2]=
 Internal ID identification for the nodes
 
 */
-#define SINK_INTERNAL_ID 0
-#define SRC_INTERNAL_ID 1
+#define AUDIOWIN_INTERNAL_ID 0
+#define MFCC_INTERNAL_ID 1
+#define MFCCWIN_INTERNAL_ID 2
+#define SEND_INTERNAL_ID 3
+#define SRC_INTERNAL_ID 4
+#define TO_F32_INTERNAL_ID 5
+#define CLASSIFY_INTERNAL_ID 6
+#define KWS_INTERNAL_ID 7
 
+/* Initialize the selectors global IDs in each class */
+template<>
+std::array<uint16_t,1> SendToNetwork<float,490>::selectors = {SEL_ACK_ID};
+std::array<uint16_t,1> KWS::selectors = {SEL_ACK_ID};
 
 
 /***********
@@ -120,19 +130,37 @@ FIFO buffers
 
 ************/
 #define FIFOSIZE0 320
+#define FIFOSIZE1 320
+#define FIFOSIZE2 640
+#define FIFOSIZE3 10
+#define FIFOSIZE4 490
 
-#define BUFFERSIZE0 640
+#define BUFFERSIZE0 1280
 CG_BEFORE_BUFFER
 uint8_t stream_app_buf0[BUFFERSIZE0]={0};
 
+#define BUFFERSIZE1 2560
+CG_BEFORE_BUFFER
+uint8_t stream_app_buf1[BUFFERSIZE1]={0};
+
 
 typedef struct {
-FIFO<int16_t,FIFOSIZE0,1,0> *fifo0;
+FIFO<q15_t,FIFOSIZE0,1,0> *fifo0;
+FIFO<float,FIFOSIZE1,1,0> *fifo1;
+FIFO<float,FIFOSIZE2,1,0> *fifo2;
+FIFO<float,FIFOSIZE3,1,0> *fifo3;
+FIFO<float,FIFOSIZE4,1,0> *fifo4;
 } fifos_t;
 
 typedef struct {
-    DebugSink<int16_t,320> *sink;
-    MicrophoneSource<int16_t,320> *src;
+    SlidingBuffer<float,640,320> *audioWin;
+    MFCC<float,640,float,10> *mfcc;
+    SlidingBuffer<float,490,480> *mfccWin;
+    SendToNetwork<float,490> *send;
+    MicrophoneSource<q15_t,320> *src;
+    Convert<q15_t,320,float,320> *to_f32;
+    KWSClassify *classify;
+    KWS *kws;
 } nodes_t;
 
 
@@ -159,8 +187,28 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     (void)evtQueue;
 
     CG_BEFORE_FIFO_INIT;
-    fifos.fifo0 = new (std::nothrow) FIFO<int16_t,FIFOSIZE0,1,0>(stream_app_buf0);
+    fifos.fifo0 = new (std::nothrow) FIFO<q15_t,FIFOSIZE0,1,0>(stream_app_buf1);
     if (fifos.fifo0==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    fifos.fifo1 = new (std::nothrow) FIFO<float,FIFOSIZE1,1,0>(stream_app_buf0);
+    if (fifos.fifo1==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    fifos.fifo2 = new (std::nothrow) FIFO<float,FIFOSIZE2,1,0>(stream_app_buf1);
+    if (fifos.fifo2==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    fifos.fifo3 = new (std::nothrow) FIFO<float,FIFOSIZE3,1,0>(stream_app_buf0);
+    if (fifos.fifo3==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    fifos.fifo4 = new (std::nothrow) FIFO<float,FIFOSIZE4,1,0>(stream_app_buf1);
+    if (fifos.fifo4==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
@@ -168,15 +216,39 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     CG_BEFORE_NODE_INIT;
     cg_status initError;
 
-    nodes.sink = new (std::nothrow) DebugSink<int16_t,320>(*(fifos.fifo0));
-    if (nodes.sink==NULL)
+    nodes.audioWin = new (std::nothrow) SlidingBuffer<float,640,320>(*(fifos.fifo1),*(fifos.fifo2));
+    if (nodes.audioWin==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
-    identifiedNodes[STREAM_APP_SINK_ID]=createStreamNode(*nodes.sink);
-    nodes.sink->setID(STREAM_APP_SINK_ID);
+    identifiedNodes[STREAM_APP_AUDIOWIN_ID]=createStreamNode(*nodes.audioWin);
+    nodes.audioWin->setID(STREAM_APP_AUDIOWIN_ID);
 
-    nodes.src = new (std::nothrow) MicrophoneSource<int16_t,320>(*(fifos.fifo0),params->src);
+    nodes.mfcc = new (std::nothrow) MFCC<float,640,float,10>(*(fifos.fifo2),*(fifos.fifo3));
+    if (nodes.mfcc==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    identifiedNodes[STREAM_APP_MFCC_ID]=createStreamNode(*nodes.mfcc);
+    nodes.mfcc->setID(STREAM_APP_MFCC_ID);
+
+    nodes.mfccWin = new (std::nothrow) SlidingBuffer<float,490,480>(*(fifos.fifo3),*(fifos.fifo4));
+    if (nodes.mfccWin==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    identifiedNodes[STREAM_APP_MFCCWIN_ID]=createStreamNode(*nodes.mfccWin);
+    nodes.mfccWin->setID(STREAM_APP_MFCCWIN_ID);
+
+    nodes.send = new (std::nothrow) SendToNetwork<float,490>(*(fifos.fifo4),evtQueue);
+    if (nodes.send==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    identifiedNodes[STREAM_APP_SEND_ID]=createStreamNode(*nodes.send);
+    nodes.send->setID(STREAM_APP_SEND_ID);
+
+    nodes.src = new (std::nothrow) MicrophoneSource<q15_t,320>(*(fifos.fifo0),params->src);
     if (nodes.src==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -184,15 +256,66 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_SRC_ID]=createStreamNode(*nodes.src);
     nodes.src->setID(STREAM_APP_SRC_ID);
 
+    nodes.to_f32 = new (std::nothrow) Convert<q15_t,320,float,320>(*(fifos.fifo0),*(fifos.fifo1));
+    if (nodes.to_f32==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    identifiedNodes[STREAM_APP_TO_F32_ID]=createStreamNode(*nodes.to_f32);
+    nodes.to_f32->setID(STREAM_APP_TO_F32_ID);
+
+    nodes.classify = new (std::nothrow) KWSClassify(evtQueue,params->classify);
+    if (nodes.classify==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    identifiedNodes[STREAM_APP_CLASSIFY_ID]=createStreamNode(*nodes.classify);
+    nodes.classify->setID(STREAM_APP_CLASSIFY_ID);
+
+    nodes.kws = new (std::nothrow) KWS(evtQueue,params->kws);
+    if (nodes.kws==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+    identifiedNodes[STREAM_APP_KWS_ID]=createStreamNode(*nodes.kws);
+    nodes.kws->setID(STREAM_APP_KWS_ID);
+
 
 /* Subscribe nodes for the event system*/
+    nodes.send->subscribe(0,*nodes.kws,0);
+    nodes.kws->subscribe(0,*nodes.send,0);
+    nodes.kws->subscribe(1,*nodes.classify,0);
 
     initError = CG_SUCCESS;
-    initError = nodes.sink->init();
+    initError = nodes.audioWin->init();
+    if (initError != CG_SUCCESS)
+        return(initError);
+    
+    initError = nodes.mfcc->init();
+    if (initError != CG_SUCCESS)
+        return(initError);
+    
+    initError = nodes.mfccWin->init();
+    if (initError != CG_SUCCESS)
+        return(initError);
+    
+    initError = nodes.send->init();
     if (initError != CG_SUCCESS)
         return(initError);
     
     initError = nodes.src->init();
+    if (initError != CG_SUCCESS)
+        return(initError);
+    
+    initError = nodes.to_f32->init();
+    if (initError != CG_SUCCESS)
+        return(initError);
+    
+    initError = nodes.classify->init();
+    if (initError != CG_SUCCESS)
+        return(initError);
+    
+    initError = nodes.kws->init();
     if (initError != CG_SUCCESS)
         return(initError);
     
@@ -209,14 +332,54 @@ void free_scheduler_app()
     {
        delete fifos.fifo0;
     }
-
-    if (nodes.sink!=NULL)
+    if (fifos.fifo1!=NULL)
     {
-        delete nodes.sink;
+       delete fifos.fifo1;
+    }
+    if (fifos.fifo2!=NULL)
+    {
+       delete fifos.fifo2;
+    }
+    if (fifos.fifo3!=NULL)
+    {
+       delete fifos.fifo3;
+    }
+    if (fifos.fifo4!=NULL)
+    {
+       delete fifos.fifo4;
+    }
+
+    if (nodes.audioWin!=NULL)
+    {
+        delete nodes.audioWin;
+    }
+    if (nodes.mfcc!=NULL)
+    {
+        delete nodes.mfcc;
+    }
+    if (nodes.mfccWin!=NULL)
+    {
+        delete nodes.mfccWin;
+    }
+    if (nodes.send!=NULL)
+    {
+        delete nodes.send;
     }
     if (nodes.src!=NULL)
     {
         delete nodes.src;
+    }
+    if (nodes.to_f32!=NULL)
+    {
+        delete nodes.to_f32;
+    }
+    if (nodes.classify!=NULL)
+    {
+        delete nodes.classify;
+    }
+    if (nodes.kws!=NULL)
+    {
+        delete nodes.kws;
     }
 }
 
@@ -226,10 +389,27 @@ void reset_fifos_scheduler_app(int all)
     {
        fifos.fifo0->reset();
     }
+    if (fifos.fifo1!=NULL)
+    {
+       fifos.fifo1->reset();
+    }
+    if (fifos.fifo2!=NULL)
+    {
+       fifos.fifo2->reset();
+    }
+    if (fifos.fifo3!=NULL)
+    {
+       fifos.fifo3->reset();
+    }
+    if (fifos.fifo4!=NULL)
+    {
+       fifos.fifo4->reset();
+    }
    // Buffers are set to zero too
    if (all)
    {
        std::fill_n(stream_app_buf0, BUFFERSIZE0, (uint8_t)0);
+       std::fill_n(stream_app_buf1, BUFFERSIZE1, (uint8_t)0);
    }
 }
 
@@ -239,7 +419,6 @@ uint32_t scheduler_app(int *error)
 {
     int cgStaticError=0;
     uint32_t nbSchedule=0;
-    int32_t debugCounter=10;
 
 
 
@@ -248,12 +427,12 @@ uint32_t scheduler_app(int *error)
 
     /* Run several schedule iterations */
     CG_BEFORE_SCHEDULE;
-    while((cgStaticError==0) && (debugCounter > 0))
+    while(cgStaticError==0)
     {
         /* Run a schedule iteration */
         CG_BEFORE_ITERATION;
         unsigned long id=0;
-        for(; id < 2; id++)
+        for(; id < 6; id++)
         {
             CG_BEFORE_NODE_EXECUTION(schedule[id]);
             switch(schedule[id])
@@ -261,14 +440,42 @@ uint32_t scheduler_app(int *error)
                 case 0:
                 {
                     
-                   cgStaticError = nodes.sink->run();
+                   cgStaticError = nodes.audioWin->run();
                 }
                 break;
 
                 case 1:
                 {
                     
+                   cgStaticError = nodes.mfcc->run();
+                }
+                break;
+
+                case 2:
+                {
+                    
+                   cgStaticError = nodes.mfccWin->run();
+                }
+                break;
+
+                case 3:
+                {
+                    
+                   cgStaticError = nodes.send->run();
+                }
+                break;
+
+                case 4:
+                {
+                    
                    cgStaticError = nodes.src->run();
+                }
+                break;
+
+                case 5:
+                {
+                    
+                   cgStaticError = nodes.to_f32->run();
                 }
                 break;
 
@@ -278,7 +485,6 @@ uint32_t scheduler_app(int *error)
             CG_AFTER_NODE_EXECUTION(schedule[id]);
                         CHECKERROR;
         }
-       debugCounter--;
        CG_AFTER_ITERATION;
        nbSchedule++;
     }

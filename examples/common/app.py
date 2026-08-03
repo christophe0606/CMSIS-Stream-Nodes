@@ -140,6 +140,12 @@ def _target_dir(runner=None):
 def _hardware_target(runner, board):
     return f"{runner}/{_board_name(board)}"
 
+def _network_name(runner, board):
+    if runner == "posix":
+        return "kws_micronet_m.tflite.cpp"
+    else:
+        return "kws_micronet_m_vela_H128.tflite.cpp"
+
 def _format_c_literal(value, c_type):
     if isinstance(value, bool):
         value = 1 if value else 0
@@ -336,6 +342,7 @@ def _gen_build_config(runner, board):
         print(f"set(APP_GENERATED_RUNNER \"{runner}\")",file=f)
         print(f"set(APP_GENERATED_BOARD \"{_board_name(board)}\")",file=f)
         print(f"set(APP_GENERATED_HARDWARE_TARGET \"{_hardware_target(runner, board)}\")",file=f)
+        print(f"set(APP_GENERATED_NETWORK \"{_network_name(runner, board)}\")",file=f)
 
 def mk_app(the_graph, params=None, globals=None, config=None, runner=None, board=None,debug_limit=0):
     if config is None:

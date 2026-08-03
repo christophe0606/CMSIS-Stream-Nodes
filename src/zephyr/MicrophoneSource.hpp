@@ -21,6 +21,8 @@ class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outpu
     static_assert(detail::isSupportedMicrophoneType<OUT>(),
                   "MicrophoneSource supports float, q15_t, sf32, and sq15 samples");
 
+    static_assert(outputSamples*sizeof(OUT) == MIC_BLOCK_SIZE,
+                  "MicrophoneSource output buffer size must match MIC_BLOCK_SIZE");
   public:
     MicrophoneSource(arm_cmsis_stream::FIFOBase<OUT> &dst, const MicrophoneSourceParams &params)
         : arm_cmsis_stream::GenericSource<OUT, outputSamples>(dst),
@@ -77,6 +79,7 @@ class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outpu
         if (!started_.load()) {
             return 0;
         }
+        CMSISSTREAM_LOG_DBG("Pausing microphone source");
         const int result =
             i2s_trigger(hw_.microphone_device, I2S_DIR_RX, I2S_TRIGGER_STOP);
         started_.store(false);
@@ -85,6 +88,7 @@ class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outpu
 
     int resume() final
     {
+        CMSISSTREAM_LOG_DBG("Resuming microphone source");
         started_.store(false);
         return 0;
     }
@@ -105,6 +109,7 @@ class MicrophoneSource final : public arm_cmsis_stream::GenericSource<OUT, outpu
 
     void stopAudio()
     {
+        CMSISSTREAM_LOG_DBG("Stopping microphone source");
         if (hw_.microphone_device != nullptr) {
             (void)i2s_trigger(hw_.microphone_device, I2S_DIR_RX, I2S_TRIGGER_DROP);
         }

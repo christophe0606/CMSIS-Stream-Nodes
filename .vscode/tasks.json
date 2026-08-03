@@ -62,7 +62,7 @@
                 "-f",
                 "../boards/zephyr/fvp_cs300/fvp_config.txt",
                 "-a",
-                "out/Zephyr_runner/AVH-SSE-300/Debug/zephyr/zephyr.elf"
+                "out/Zephyr_runner/AVH-SSE-300/Release/zephyr/zephyr.elf"
             ],
             "problemMatcher": []
         }

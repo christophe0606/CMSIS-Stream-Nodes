@@ -1,0 +1,12 @@
+layer:
+  type: Nodes
+  description: C implementations for some nodes
+
+  groups:
+    - group: src
+      files:
+        - file: csrc/kws_mfcc.c
+
+  add-path:
+    - csrc
+

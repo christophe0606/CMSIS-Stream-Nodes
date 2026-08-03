@@ -4,4 +4,12 @@
 config NUM_IRQS
 	default 240 if BOARD_MPS3_CORSTONE300_FVP
 
+config ACTIVATION_BUF_SZ
+	hex "Tensor arena size"
+	default 0x20000
+
+config VSI_LOG_LEVEL
+	int "VSI log level"
+	default 3
+
 source "Kconfig.zephyr"

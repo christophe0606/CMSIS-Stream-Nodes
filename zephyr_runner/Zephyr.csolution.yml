@@ -15,10 +15,11 @@ solution:
       west-defs:
         - DTS_ROOT: ../boards/zephyr/fvp_cs300
         - EXTRA_DTC_OVERLAY_FILE: ../boards/zephyr/fvp_cs300/overlay/i2s_vsi.overlay
+        - EXTRA_CONF_FILE: ../boards/zephyr/fvp_cs300/board.conf
       target-set:
         - set:
           images:
-            - project-context: Zephyr_runner.Debug
+            - project-context: Zephyr_runner.Release
           debugger:
             name: Arm-FVP
             model: FVP_Corstone_SSE-300_Ethos-U55
@@ -54,7 +55,7 @@ solution:
     - type: Release
       optimize: speed
       west-defs:
-        - CONFIG_SIZE_OPTIMIZATIONS: y
+        - CONFIG_SPEED_OPTIMIZATIONS: y
 
   projects:
     - west:

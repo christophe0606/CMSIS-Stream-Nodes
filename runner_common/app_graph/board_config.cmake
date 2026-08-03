@@ -2,3 +2,4 @@
 set(APP_GENERATED_RUNNER "zephyr")
 set(APP_GENERATED_BOARD "fvp_cs300")
 set(APP_GENERATED_HARDWARE_TARGET "zephyr/fvp_cs300")
+set(APP_GENERATED_NETWORK "kws_micronet_m_vela_H128.tflite.cpp")

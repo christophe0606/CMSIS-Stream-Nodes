@@ -6,6 +6,11 @@ AppParams appParams = {
     .src = {
         .num_channels = 1,
     },
+    .classify = {
+        .historyLength = 10,
+    },
+    .kws = {
+    },
 };
 
 void app_params_set_hardware(const HardwareParams *params)
@@ -14,4 +19,5 @@ void app_params_set_hardware(const HardwareParams *params)
         return;
     }
     appParams.src.hw_ = *params;
+    appParams.kws.hw_ = *params;
 }

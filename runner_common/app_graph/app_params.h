@@ -7,7 +7,7 @@
 
 #define MIC_BLOCK_SIZE 640
 #define MIC_SAMPLE_RATE 16000
-#define MIC_CHANNELS 2
+#define MIC_CHANNELS 1
 #define MIC_FRAMES_PER_BUFFER 0
 #define MIC_SAMPLE_SIZE 16
 #define VSI0_FILE_PATH "examples/assets/sample_audio.wav"
@@ -18,7 +18,17 @@ typedef struct {
 } MicrophoneSourceParams;
 
 typedef struct {
+    int32_t historyLength;
+} KWSClassifyParams;
+
+typedef struct {
+    HardwareParams hw_;
+} KWSParams;
+
+typedef struct {
     MicrophoneSourceParams src;
+    KWSClassifyParams classify;
+    KWSParams kws;
 } AppParams;
 
 extern AppParams appParams;

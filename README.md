@@ -32,3 +32,9 @@ The CMSIS-Stream scheduler will be generated in `runner_common/app_graph`. You'l
 This script is available in each example folder. For instance: `examples/recorder/create.py`.
 
 See [Configuring and generating an application](documentation/configuring_application.md) for a recorder-based walkthrough. The [project principles](documentation/principles.md#generating-and-building-an-application) explain how generation selects node implementations and board support.
+
+## Network
+
+The demo using a TFLite network currently uses only one network.
+The format of this network depends on the target : posix or Ethos.
+The network is selected in `app.py` when running the python script `create.py` for a given application.

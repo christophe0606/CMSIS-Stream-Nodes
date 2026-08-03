@@ -22,12 +22,20 @@ extern "C"
 
 
 /* Node identifiers */
-#define STREAM_APP_NB_IDENTIFIED_NODES 2
-#define STREAM_APP_SINK_ID 0
-#define STREAM_APP_SRC_ID 1
+#define STREAM_APP_NB_IDENTIFIED_NODES 8
+#define STREAM_APP_AUDIOWIN_ID 0
+#define STREAM_APP_MFCC_ID 1
+#define STREAM_APP_MFCCWIN_ID 2
+#define STREAM_APP_SEND_ID 3
+#define STREAM_APP_SRC_ID 4
+#define STREAM_APP_TO_F32_ID 5
+#define STREAM_APP_CLASSIFY_ID 6
+#define STREAM_APP_KWS_ID 7
 
-#define STREAM_APP_SCHED_LEN 2
+#define STREAM_APP_SCHED_LEN 6
 
+/* Selectors global identifiers */
+#define SEL_ACK_ID 100 
 
 extern CStreamNode* get_scheduler_app_node(int32_t nodeID);
 

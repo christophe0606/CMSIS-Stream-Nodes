@@ -15,7 +15,10 @@
 };
 
 
-
 &ethosu0 {
 	status = "okay";
+};
+
+&{/cpus/cpu@0} {
+    clock-frequency = <200000000>;
 };

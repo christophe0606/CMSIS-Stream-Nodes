@@ -1,4 +1,10 @@
 {
-  "sink": 0,
-  "src": 1
+  "audioWin": 0,
+  "mfcc": 1,
+  "mfccWin": 2,
+  "send": 3,
+  "src": 4,
+  "to_f32": 5,
+  "classify": 6,
+  "kws": 7
 }

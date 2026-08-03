@@ -49,7 +49,7 @@
             "type": "gdbtarget",
             "request": "launch",
             "cwd": "${workspaceFolder}/zephyr_runner",
-            "program": "out/Zephyr_runner/AVH-SSE-300/Debug/zephyr/zephyr.elf",
+            "program": "out/Zephyr_runner/AVH-SSE-300/Release/zephyr/zephyr.elf",
             "gdb": "arm-none-eabi-gdb",
             "auxiliaryGdb": false,
             "initCommands": [
@@ -68,7 +68,7 @@
                     "-f",
                     "../boards/zephyr/fvp_cs300/fvp_config.txt",
                     "-a",
-                    "out/Zephyr_runner/AVH-SSE-300/Debug/zephyr/zephyr.elf"
+                    "out/Zephyr_runner/AVH-SSE-300/Release/zephyr/zephyr.elf"
                 ],
                 "port": "3333"
             },
@@ -82,7 +82,7 @@
             "type": "gdbtarget",
             "request": "attach",
             "cwd": "${workspaceFolder}/zephyr_runner",
-            "program": "out/Zephyr_runner/AVH-SSE-300/Debug/zephyr/zephyr.elf",
+            "program": "out/Zephyr_runner/AVH-SSE-300/Release/zephyr/zephyr.elf",
             "gdb": "arm-none-eabi-gdb",
             "auxiliaryGdb": false,
             "initCommands": [

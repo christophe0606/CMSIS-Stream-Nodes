@@ -13,6 +13,8 @@
 #include <zephyr/drivers/i2s.h>
 #include <zephyr/irq.h>
 #include <zephyr/kernel.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(vsi, CONFIG_VSI_LOG_LEVEL);
 
 #include "i2s_vsi.h"
 
@@ -91,6 +93,7 @@ struct vsi_i2s_data {
 
 static void vsi_i2s_stream_disable(const struct device *dev)
 {
+	LOG_DBG("Disable VSI\n");
 	const struct vsi_i2s_config *config = dev->config;
 
 	config->registers->timer.control = 0U;
@@ -109,6 +112,7 @@ static void vsi_i2s_free_queued_blocks(struct vsi_i2s_data *data)
 
 static void vsi_i2s_drop(const struct device *dev)
 {
+	LOG_DBG("VSI drop\n");
 	struct vsi_i2s_data *data = dev->data;
 
 	data->state = VSI_I2S_READY;
@@ -128,6 +132,7 @@ static int vsi_i2s_prepare_dma_block(const struct device *dev)
 				     K_NO_WAIT) != 0) {
 			return -ENOMEM;
 		}
+		LOG_DBG("Allocated active block=%08X", data->active_block);
 	}
 
 	config->registers->dma.address = (uint32_t)(uintptr_t)data->active_block;
@@ -138,6 +143,7 @@ static int vsi_i2s_prepare_dma_block(const struct device *dev)
 
 static void vsi_i2s_fail(const struct device *dev)
 {
+	LOG_DBG("VSI fail\n");
 	struct vsi_i2s_data *data = dev->data;
 
 	data->state = VSI_I2S_ERROR;
@@ -163,14 +169,18 @@ static void vsi_i2s_isr(const void *arg)
 			.size = data->rx_config.block_size,
 		};
 
+		LOG_DBG("mem_slab used=%d", k_mem_slab_num_used_get(data->rx_config.mem_slab));
 		if (k_mem_slab_alloc(data->rx_config.mem_slab,
 				     &completed.memory,
 				     K_NO_WAIT) != 0) {
+			LOG_ERR("Failed to allocate memory for completed block\n");
 			vsi_i2s_fail(dev);
 			return;
 		}
+		LOG_DBG("Allocated block=%08X", completed.memory);
 		memcpy(completed.memory, data->active_block, completed.size);
 		if (k_msgq_put(&data->rx_queue, &completed, K_NO_WAIT) != 0) {
+			LOG_ERR("Failed to queue completed block\n");
 			k_mem_slab_free(data->rx_config.mem_slab, completed.memory);
 			vsi_i2s_fail(dev);
 			return;
@@ -178,6 +188,7 @@ static void vsi_i2s_isr(const void *arg)
 	}
 
 	if (data->stop_pending || ((status & VSI_STATUS_EOS) != 0U)) {
+		LOG_DBG("VSI stop or EOS\n");
 		vsi_i2s_stream_disable(dev);
 		data->stop_pending = false;
 		data->state = VSI_I2S_READY;
