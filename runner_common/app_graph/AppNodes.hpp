@@ -4,7 +4,7 @@
 #include "generic/MFCC.hpp"
 #include "generic/SlidingBuffer.hpp"
 #include "generic/SendToNetwork.hpp"
-#include "zephyr/MicrophoneSource.hpp"
+#include "cmsis/MicrophoneSource.hpp"
 #include "generic/Convert.hpp"
 #include "generic/KWSClassify.hpp"
 #include "generic/KWS.hpp"

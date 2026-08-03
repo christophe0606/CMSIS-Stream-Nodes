@@ -5,7 +5,7 @@
 #include "dsp/statistics_functions.h"
 
 #include <string>
-
+#include <cstdio>
 
 using namespace arm_cmsis_stream;
 
@@ -62,7 +62,7 @@ class KWSClassify: public StreamNode, public ContextSwitch
 		if (label_idx < nbLabels - 2) {
 			const char *a = labelsVec[label_idx];
 			if (label_idx != lastRec) {
-				LOG_INF("KWS Classify: %s\n", a);
+				printf("KWS Classify: %s\n", a);
 			}
 			ev0.sendSync(kNormalPriority, kValue,
 					     (uint32_t)label_idx); // Send the event to the
@@ -107,7 +107,7 @@ class KWSClassify: public StreamNode, public ContextSwitch
 			this->sendLabel(res);
 		});
 		if (lockError) {
-			LOG_ERR("KWSClassify: processKWS: lock error\n");
+			CMSISSTREAM_LOG_ERR("KWSClassify: processKWS: lock error\n");
 		}
 	}
 
@@ -121,7 +121,7 @@ class KWSClassify: public StreamNode, public ContextSwitch
 			sendLabel(res);
 		});
 		if (lockError) {
-			LOG_ERR("KWSClassify: processConstantKWS: lock error\n");
+			CMSISSTREAM_LOG_ERR("KWSClassify: processConstantKWS: lock error\n");
 		}
 	}
 
@@ -137,7 +137,7 @@ class KWSClassify: public StreamNode, public ContextSwitch
 			}
 			else
 			{
-				LOG_ERR("KWSClassify: processEvent: invalid event type\n");
+				CMSISSTREAM_LOG_ERR("KWSClassify: processEvent: invalid event type\n");
 				return CG_OS_ERROR;
 			}
 		}

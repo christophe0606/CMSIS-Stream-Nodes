@@ -29,6 +29,27 @@
   Scatter File Definitions definition
  *----------------------------------------------------------------------------*/
 
+/*----------------------------------------------------------------------------
+  FVP CS300 DDR
+
+  The FVP exposes 32 MiB of DDR at 0x70000000. Keep read-only code and the
+  vector table in ITCM, but place read-only data (including the neural-network
+  model) and the activation buffer directly in DDR. This load region must
+  precede LR_ROM0 so that its selectors run before the generic ROM/RAM
+  selectors below.
+ *----------------------------------------------------------------------------*/
+LR_DDR 0x70000000 0x02000000 {
+
+  ER_DDR_RO 0x70000000 {
+    *.o (.rodata.tflm_model)
+    *.o (.rodata*)
+  }
+
+  RW_DDR AlignExpr(+0, 16) {
+    *.o (.bss.activation_buf)
+  }
+}
+
 LR_ROM0 __ROM0_BASE __ROM0_SIZE  {
 
   ER_ROM0 __ROM0_BASE __ROM0_SIZE {
@@ -42,7 +63,9 @@ LR_ROM0 __ROM0_BASE __ROM0_SIZE  {
     *(Veneer$$CMSE)
   }
 #endif
+}
 
+LR_RAM0 __RAM0_BASE __RAM0_SIZE {
   RW_NOINIT __RAM0_BASE UNINIT (__RAM0_SIZE - __HEAP_SIZE - __STACK_SIZE - __STACKSEAL_SIZE) {
     *.o(.bss.noinit)
     *.o(.bss.noinit.*)
@@ -64,25 +87,31 @@ LR_ROM0 __ROM0_BASE __ROM0_SIZE  {
   STACKSEAL +0 EMPTY __STACKSEAL_SIZE {             ; Reserve empty region for stack seal immediately after stack
   }
 #endif
+}
 
 #if __RAM1_SIZE > 0
+LR_RAM1 __RAM1_BASE __RAM1_SIZE {
   RW_RAM1 __RAM1_BASE __RAM1_SIZE  {
    .ANY (+RW +ZI)
   }
+}
 #endif
 
 #if __RAM2_SIZE > 0
+LR_RAM2 __RAM2_BASE __RAM2_SIZE {
   RW_RAM2 __RAM2_BASE __RAM2_SIZE  {
    .ANY (+RW +ZI)
   }
+}
 #endif
 
 #if __RAM3_SIZE > 0
+LR_RAM3 __RAM3_BASE __RAM3_SIZE {
   RW_RAM3 __RAM3_BASE __RAM3_SIZE  {
    .ANY (+RW +ZI)
   }
-#endif
 }
+#endif
 
 #if __ROM1_SIZE > 0
 LR_ROM1 __ROM1_BASE __ROM1_SIZE  {

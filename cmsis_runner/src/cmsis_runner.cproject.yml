@@ -10,15 +10,28 @@ project:
       files:
         - file: ../../runner_common/app_graph/scheduler_app.cpp
         - file: ../../runner_common/app_graph/app_params.c
+    - group: Nodes
+      files:
+        - file: ../../src/csrc/classify.c
+    - group: NN Model
+      files:
+        - file: ../../networks/$NNNetwork$
+        - file: ../../networks/network.cpp
+
+  define:
+    - CONFIG_ACTIVATION_BUF_SZ: 131072
 
   add-path:
     - .
     - ../../runner_common/app_graph
     - ../../runner_common
+    - ../../networks/
     - ../../src
 
   layers:
-    - layer: ../src/Nodes.clayer.yml
+    - layer: ../../src/Nodes.clayer.yml
+    - layer: $Board-Layer$
+      type: Board
     
   # List components to use for your application.
   # A software component is a re-usable unit that may be configurable.
@@ -28,9 +41,17 @@ project:
     - component: CMSIS:DSP&Source
     - component: ARM::CMSIS:STREAM
 
-  layers:
-    - layer: $Board-Layer$
-      type: Board
+    - component: CMSIS:NN Lib
+    - component: Data Exchange:Serialization:flatbuffers&tensorflow
+    - component: Data Processing:Math:gemmlowp fixed-point&tensorflow
+    - component: Data Processing:Math:kissfft&tensorflow
+    - component: Data Processing:Math:ruy&tensorflow
+    - component: Machine Learning:TensorFlow:Kernel&Ethos-U
+    - component: Machine Learning:TensorFlow:Kernel Utils
+    - component: Machine Learning:TensorFlow:Testing
+    - component: Machine Learning:NPU Support:Ethos-U Driver&Generic U55
+
+    
 
   # List executable file formats to be generated.
   output:

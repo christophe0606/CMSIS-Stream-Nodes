@@ -5,6 +5,9 @@
 #include "datatypes.h"
 #include "vstream_audio_in.h"
 
+#include "network.h"
+
+
 #ifndef MIC_SAMPLE_RATE
 #error "MIC_SAMPLE_RATE must be defined by the application"
 #endif
@@ -81,6 +84,9 @@ int hardware_params_init(HardwareParams *params)
     params->microphone_event = audio_event;
     params->microphone_sample_rate = MIC_SAMPLE_RATE;
     params->microphone_num_channels = MIC_CHANNELS;
+
+    params->model_weights = GetModelPointer();
+    params->model_size = GetModelLen();
     return 0;
 }
 

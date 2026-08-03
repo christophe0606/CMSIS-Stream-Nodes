@@ -1,7 +1,6 @@
 #ifndef DATATYPES_H
 #define DATATYPES_H
 
-#include "arm_math_types.h"
 
 struct cf32 {
     float real;

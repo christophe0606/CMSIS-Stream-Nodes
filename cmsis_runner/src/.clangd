@@ -1,5 +1,5 @@
 CompileFlags:
-  CompilationDatabase: c:\Users\chrfav01\benchresults\CMSIS-Stream-Nodes\cmsis_runner\out\cmsis_runner\AE722F80F55D5LS\Debug
+  CompilationDatabase: c:\Users\chrfav01\benchresults\CMSIS-Stream-Nodes\cmsis_runner\out\cmsis_runner\SSE-300-MPS3\Debug
 
 ---
 If:
@@ -7,7 +7,7 @@ If:
 CompileFlags:
   Add:
     - -include
-    - c:\Users\chrfav01\benchresults\CMSIS-Stream-Nodes\cmsis_runner\out\cmsis_runner\AE722F80F55D5LS\Debug\compile_macros_c.h
+    - c:\Users\chrfav01\benchresults\CMSIS-Stream-Nodes\cmsis_runner\out\cmsis_runner\SSE-300-MPS3\Debug\compile_macros_c.h
 
 ---
 If:
@@ -15,4 +15,4 @@ If:
 CompileFlags:
   Add:
     - -include
-    - c:\Users\chrfav01\benchresults\CMSIS-Stream-Nodes\cmsis_runner\out\cmsis_runner\AE722F80F55D5LS\Debug\compile_macros_cxx.h
+    - c:\Users\chrfav01\benchresults\CMSIS-Stream-Nodes\cmsis_runner\out\cmsis_runner\SSE-300-MPS3\Debug\compile_macros_cxx.h

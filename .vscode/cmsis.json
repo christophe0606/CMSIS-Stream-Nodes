@@ -1,7 +1,7 @@
 {
     "targetSet": {
         "cmsis_runner/CMSIS": {
-            "activeTargetType": "AE722F80F55D5LS"
+            "activeTargetType": "SSE-300-MPS3"
         },
         "zephyr_runner/Zephyr": {
             "activeTargetType": "AVH-SSE-300"

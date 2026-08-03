@@ -14,6 +14,8 @@
 
 LOG_MODULE_DECLARE(cmsisstream, CONFIG_CMSISSTREAM_LOG_LEVEL);
 
+#include "arm_math_types.h"
+
 extern "C" {
 #include "datatypes.h"
 #include "app_params.h"

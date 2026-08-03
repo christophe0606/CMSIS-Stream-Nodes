@@ -31,6 +31,8 @@ extern "C"
 #include "cg_enums.h"
 #include "stream_rtos_events.h"
 
+#include "arm_math_types.h"
+
 extern "C"
 {
     #include "datatypes.h"

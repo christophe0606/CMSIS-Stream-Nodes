@@ -25,6 +25,14 @@ solution:
     - pack: ARM::CMSIS-DSP@^1.17.0
     - pack: ARM::CMSIS-STREAM
       path: ../../CMSIS-Stream
+    - pack: ARM::CMSIS-NN@^7.0.0
+    - pack: tensorflow::flatbuffers@^1.25.2
+    - pack: tensorflow::gemmlowp@^1.25.2
+    - pack: tensorflow::kissfft@^1.25.2
+    - pack: tensorflow::ruy@^1.25.2
+    - pack: tensorflow::tensorflow-lite-micro@^1.25.2
+    - pack: ARM::ethos-u-core-driver
+
 
   # List different hardware targets that are used to deploy the solution.
   target-types:
@@ -32,6 +40,7 @@ solution:
       board: V2M-MPS3-SSE-300-FVP
       device: SSE-300-MPS3
       variables:
+        - NNNetwork: kws_micronet_m_vela_H128.tflite.cpp
         - Board-Layer: ./../../boards/cmsis/fvp_cs300/Board.clayer.yml
       misc:
         - for-compiler: CLANG
@@ -55,6 +64,7 @@ solution:
       board: AppKit-E7-AIML
       device: AE722F80F55D5LS
       variables:
+        - NNNetwork: kws_micronet_m_vela_H128.tflite.cpp
         - Board-Layer: $SolutionDir()$/../boards/cmsis/AlifE7/AppKit-E7_M55_HE/Board_HE.clayer.yml
           copied-from: ${CMSIS_PACK_ROOT}/AlifSemiconductor/Ensemble/2.0.2/Boards/AppKit-e7-aiml/Layers/M55_HE/Board_HE.clayer.yml
       target-set:

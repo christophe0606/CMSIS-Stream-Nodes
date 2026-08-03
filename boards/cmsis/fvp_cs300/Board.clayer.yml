@@ -5,7 +5,9 @@ layer:
   for-device: ARM::SSE-300-MPS3
 
   define:
+    - ETHOSU55
     - CORSTONE300_FVP
+    - ARM_MODEL_USE_PMU_COUNTERS
 
   packs:
     - pack: ARM::CMSIS@6.3.0
