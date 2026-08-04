@@ -24,6 +24,8 @@ layer:
     - component: ARM::Device:Native Driver:SysTimer
     - component: Device:Native Driver:IO
     - component: CMSIS Driver:vStream:Custom
+    - component: Machine Learning:NPU Support:Ethos-U Driver&Generic U55
+
 
 
   groups:

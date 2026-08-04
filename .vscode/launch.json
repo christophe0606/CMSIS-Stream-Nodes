@@ -45,30 +45,37 @@
             "preLaunchTask": "CMake: build posix runner"
         },
         {
-            "name": "Arm-FVP@GDB (launch)",
+            "name": "M55_HE CMSIS_DAP@pyOCD (launch)",
             "type": "gdbtarget",
             "request": "launch",
             "cwd": "${workspaceFolder}/cmsis_runner",
-            "program": "out/cmsis_runner/SSE-300-MPS3/Debug/cmsis_runner.axf",
+            "program": "out/cmsis_runner/AE722F80F55D5LS/Debug/cmsis_runner.axf",
             "gdb": "arm-none-eabi-gdb",
-            "auxiliaryGdb": false,
+            "auxiliaryGdb": true,
+            "preLaunchTask": "CMSIS Load",
             "initCommands": [
-                "set remote verbose-resume-supported-packet off",
-                "set remote verbose-resume-packet off",
+                "monitor reset halt",
                 "tbreak main"
             ],
+            "customResetCommands": [
+                "monitor reset halt",
+                "maintenance flush register-cache",
+                "maintenance flush dcache",
+                "tbreak main",
+                "continue"
+            ],
             "target": {
-                "server": "FVP_Corstone_SSE-300_Ethos-U55",
+                "server": "pyocd",
                 "serverParameters": [
-                    "-D",
-                    "--plugin",
-                    "${env:AVH_FVP_PLUGINS}/GDBServer.dll",
-                    "-C",
-                    "GDBServer.port=3333",
-                    "-f",
-                    "../boards/cmsis/fvp_cs300/fvp_config.txt",
-                    "-a",
-                    "out/cmsis_runner/SSE-300-MPS3/Debug/cmsis_runner.hex"
+                    "gdbserver",
+                    "--probe",
+                    "cmsisdap:",
+                    "--persist",
+                    "--cbuild-run",
+                    "${command:cmsis-csolution.getCbuildRunFile}",
+                    "--quiet",
+                    "--log",
+                    "*.cbuild_run,*server=info"
                 ],
                 "port": "3333"
             },
@@ -78,19 +85,51 @@
             }
         },
         {
-            "name": "Arm-FVP@GDB (attach)",
+            "name": "M55_HE CMSIS_DAP@pyOCD (attach)",
             "type": "gdbtarget",
             "request": "attach",
             "cwd": "${workspaceFolder}/cmsis_runner",
-            "program": "out/cmsis_runner/SSE-300-MPS3/Debug/cmsis_runner.axf",
+            "program": "out/cmsis_runner/AE722F80F55D5LS/Debug/cmsis_runner.axf",
             "gdb": "arm-none-eabi-gdb",
-            "auxiliaryGdb": false,
+            "auxiliaryGdb": true,
             "initCommands": [
-                "set remote verbose-resume-supported-packet off",
-                "set remote verbose-resume-packet off"
+                ""
+            ],
+            "customResetCommands": [
+                "monitor reset halt",
+                "maintenance flush register-cache",
+                "maintenance flush dcache",
+                "tbreak main",
+                "continue"
             ],
             "target": {
                 "port": "3333"
+            },
+            "cmsis": {
+                "cbuildRunFile": "${command:cmsis-csolution.getCbuildRunFile}",
+                "updateConfiguration": "auto"
+            }
+        },
+        {
+            "name": "M55_HP CMSIS_DAP@pyOCD (attach)",
+            "type": "gdbtarget",
+            "request": "attach",
+            "cwd": "${workspaceFolder}/cmsis_runner",
+            "program": "",
+            "gdb": "arm-none-eabi-gdb",
+            "auxiliaryGdb": true,
+            "initCommands": [
+                ""
+            ],
+            "customResetCommands": [
+                "monitor reset halt",
+                "maintenance flush register-cache",
+                "maintenance flush dcache",
+                "tbreak main",
+                "continue"
+            ],
+            "target": {
+                "port": "3334"
             },
             "cmsis": {
                 "cbuildRunFile": "${command:cmsis-csolution.getCbuildRunFile}",

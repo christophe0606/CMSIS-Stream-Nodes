@@ -72,6 +72,18 @@
 #define RTE_Drivers_MIPI_DSI               /* Driver MIPI DSI */
 /* AlifSemiconductor::Device:SOC Peripherals:PINCONF@2.1.0 */
 #define RTE_Drivers_LL_PINCONF              /* Driver PinPAD and PinMux */
+/* tensorflow::Data Exchange:Serialization:flatbuffers&tensorflow@1.25.2 */
+#define RTE_DataExchange_Serialization_flatbuffers     /* flatbuffers */
+/* tensorflow::Data Processing:Math:gemmlowp fixed-point&tensorflow@1.25.2 */
+#define RTE_DataExchange_Math_gemmlowp     /* gemmlowp */
+/* tensorflow::Data Processing:Math:kissfft&tensorflow@1.25.2 */
+#define RTE_DataExchange_Math_kissfft     /* kissfft */
+/* tensorflow::Data Processing:Math:ruy&tensorflow@1.25.2 */
+#define RTE_DataProcessing_Math_ruy     /* ruy */
+/* tensorflow::Machine Learning:TensorFlow:Kernel&Ethos-U@1.25.2 */
+#define RTE_ML_TF_LITE     /* TF */
+/* tensorflow::Machine Learning:TensorFlow:Testing@1.25.2 */
+#define RTE_ML_TF_LITE     /* TF */
 
 
 #endif /* RTE_COMPONENTS_H */

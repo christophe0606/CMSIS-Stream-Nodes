@@ -4,6 +4,9 @@
 #include "cmsis_vstream.h"
 #include "datatypes.h"
 
+#include "network.h"
+
+
 #ifndef MIC_SAMPLE_RATE
 #error "MIC_SAMPLE_RATE must be defined by the application"
 #endif
@@ -20,7 +23,7 @@
 
 extern vStreamDriver_t Driver_vStreamAudioIn;
 
-static q15_t audio_buffer[AUDIO_SOURCE_BLOCK_COUNT * MIC_BLOCK_SIZE * MIC_CHANNELS];
+static int16_t audio_buffer[AUDIO_SOURCE_BLOCK_COUNT * MIC_BLOCK_SIZE * MIC_CHANNELS];
 static osEventFlagsId_t audio_event = NULL;
 
 static void audio_event_callback(uint32_t event)
@@ -60,7 +63,7 @@ int hardware_params_init(HardwareParams *params)
 
     if (Driver_vStreamAudioIn.SetBuf(audio_buffer,
                                      sizeof(audio_buffer),
-                                     MIC_BLOCK_SIZE * MIC_CHANNELS * sizeof(q15_t)) !=
+                                     MIC_BLOCK_SIZE * MIC_CHANNELS * sizeof(int16_t)) !=
         VSTREAM_OK) {
         (void)Driver_vStreamAudioIn.Uninitialize();
         (void)osEventFlagsDelete(audio_event);
@@ -72,6 +75,9 @@ int hardware_params_init(HardwareParams *params)
     params->microphone_event = audio_event;
     params->microphone_sample_rate = MIC_SAMPLE_RATE;
     params->microphone_num_channels = MIC_CHANNELS;
+
+    params->model_weights = GetModelPointer();
+    params->model_size = GetModelLen();
     return 0;
 }
 

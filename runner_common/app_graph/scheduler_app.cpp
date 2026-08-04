@@ -157,7 +157,7 @@ typedef struct {
     MFCC<float,640,float,10> *mfcc;
     SlidingBuffer<float,490,480> *mfccWin;
     SendToNetwork<float,490> *send;
-    WavSource<q15_t,320> *src;
+    MicrophoneSource<q15_t,320> *src;
     Convert<q15_t,320,float,320> *to_f32;
     KWSClassify *classify;
     KWS *kws;
@@ -248,7 +248,7 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_SEND_ID]=createStreamNode(*nodes.send);
     nodes.send->setID(STREAM_APP_SEND_ID);
 
-    nodes.src = new (std::nothrow) WavSource<q15_t,320>(*(fifos.fifo0),params->src);
+    nodes.src = new (std::nothrow) MicrophoneSource<q15_t,320>(*(fifos.fifo0),params->src);
     if (nodes.src==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);

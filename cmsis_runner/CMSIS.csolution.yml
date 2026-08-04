@@ -33,7 +33,6 @@ solution:
     - pack: tensorflow::tensorflow-lite-micro@^1.25.2
     - pack: ARM::ethos-u-core-driver
 
-
   # List different hardware targets that are used to deploy the solution.
   target-types:
     - type: SSE-300-MPS3

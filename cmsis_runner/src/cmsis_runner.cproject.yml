@@ -49,7 +49,6 @@ project:
     - component: Machine Learning:TensorFlow:Kernel&Ethos-U
     - component: Machine Learning:TensorFlow:Kernel Utils
     - component: Machine Learning:TensorFlow:Testing
-    - component: Machine Learning:NPU Support:Ethos-U Driver&Generic U55
 
     
 
