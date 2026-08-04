@@ -13,9 +13,12 @@
 #define VSI0_FILE_PATH "examples/assets/sample_audio.wav"
 
 typedef struct {
-    HardwareParams hw_;
+    const char * path;
+    int32_t delay;
     int32_t num_channels;
-} MicrophoneSourceParams;
+    int32_t sample_format;
+    int32_t channel_format;
+} WavSourceParams;
 
 typedef struct {
     int32_t historyLength;
@@ -26,7 +29,7 @@ typedef struct {
 } KWSParams;
 
 typedef struct {
-    MicrophoneSourceParams src;
+    WavSourceParams src;
     KWSClassifyParams classify;
     KWSParams kws;
 } AppParams;

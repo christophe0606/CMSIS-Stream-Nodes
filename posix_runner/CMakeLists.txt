@@ -19,6 +19,10 @@ set(APP_RUNNER "posix" CACHE STRING "CMSIS-Stream runner")
 set(APP_RUNNER_CONFIG_DIR "${CMAKE_CURRENT_LIST_DIR}")
 set(APP_RUNNER_LIBRARIES cmsis_stream::posix_runtime CMSISDSP::CMSISDSP)
 set(APP_BOARD "" CACHE STRING "Board name to use with the selected runner")
+# If your graph uses a TFLite node, you need to build TFLite for micro
+# The original repository is using Bazel.
+# We provide a cmake build for TFLite for micro, which can be used with this runner.
+option(USE_TFLITE "Use TFLite for micro with a cmake based build" OFF)
 
 set(APP_EFFECTIVE_BOARD "${APP_BOARD}")
 if(APP_EFFECTIVE_BOARD STREQUAL "" AND EXISTS "${APP_REPO_ROOT}/runner_common/app_graph/board_config.cmake")
@@ -88,6 +92,13 @@ add_executable(app
 )
 
 add_subdirectory("${APP_REPO_ROOT}/runner_common" "${CMAKE_CURRENT_BINARY_DIR}/runner_common")
+
+target_compile_definitions(app PRIVATE CONFIG_ACTIVATION_BUF_SZ=131072)
+
+if(USE_TFLITE)
+    add_subdirectory("${APP_REPO_ROOT}/src/posix/tflite-micro-cmake" "${CMAKE_CURRENT_BINARY_DIR}/tflite_micro")
+    target_link_libraries(app PRIVATE TFLM::tflite-micro)
+endif()
 
 if(WIN32 AND DEFINED APP_PORTAUDIO_TARGET)
     add_custom_command(TARGET app POST_BUILD

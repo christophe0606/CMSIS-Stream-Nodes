@@ -7,6 +7,9 @@
 #include <portaudio.h>
 #endif
 
+#include "network.h"
+
+
 // Typical default: 16000
 #if !defined(MIC_SAMPLE_RATE)
 #error "MIC_SAMPLE_RATE must be defined by the application"
@@ -67,6 +70,9 @@ int hardware_params_init(HardwareParams *params)
 
     params->microphone_stream = stream;
 #endif
+
+    params->model_weights = GetModelPointer();
+    params->model_size = GetModelLen();
 
     return 0;
 }

@@ -4,7 +4,7 @@
 #include "generic/MFCC.hpp"
 #include "generic/SlidingBuffer.hpp"
 #include "generic/SendToNetwork.hpp"
-#include "cmsis/MicrophoneSource.hpp"
+#include "posix/WavSource.hpp"
 #include "generic/Convert.hpp"
 #include "generic/KWSClassify.hpp"
 #include "generic/KWS.hpp"

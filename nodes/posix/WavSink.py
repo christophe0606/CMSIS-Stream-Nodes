@@ -1,6 +1,6 @@
 from cmsis_stream.cg.scheduler import GenericSink
 
-from .WavSource import _CONST_CHAR_PTR, _c_string, _wav_type_params
+from .WavSource import _c_string, _wav_type_params
 
 
 class WavSink(GenericSink):
@@ -15,7 +15,7 @@ class WavSink(GenericSink):
     ):
         GenericSink.__init__(self, name, identified=True)
         self.params = {
-            "path": (_c_string(path), _CONST_CHAR_PTR),
+            "path": path,
             "sample_rate": int(sample_rate),
             **_wav_type_params(theType),
         }

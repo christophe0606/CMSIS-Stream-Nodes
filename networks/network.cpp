@@ -6,7 +6,7 @@ namespace arm {
 namespace app {
 namespace kws {
 
-uint8_t *GetModelPointer();
+const uint8_t *GetModelPointer();
 size_t GetModelLen();
 
 }  // namespace kws

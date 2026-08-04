@@ -97,6 +97,9 @@ def _infer_param_type(name, value):
             print(f"Warning: parameter '{name}' value {value} does not fit in float")
         return "float", value
 
+    if isinstance(value, str):
+        return "const char *", f'"{value}"'
+
     raise TypeError(f"Unsupported parameter value for '{name}': {value!r}")
 
 def _param_decl_and_value(name, value):
@@ -105,6 +108,7 @@ def _param_decl_and_value(name, value):
 
     if _is_typed_param(value):
         literal, the_type = value
+        # Detection of C macro names
         if isinstance(literal, str) and not _is_valid_c_identifier(literal):
             raise ValueError(f"Invalid C define name for parameter '{name}': {literal!r}")
         if isinstance(literal, bool):
@@ -304,17 +308,25 @@ def _gen_params(params, scheduling, runner, globals=None):
         print("#include <math.h>",file=f)
         print("",file=f)
         print("AppParams appParams = {",file=f)
+        first = True
         for node_name, node_data in app_fields:
             if node_name == "reserved":
+                if not first:
+                    print(",",file=f)
+                first= False
                 print("    .reserved = 0,",file=f)
                 continue
-            print(f"    .{node_name} = {{",file=f)
-            for param_name, c_type, literal in node_data["fields"]:
-                print(f"        .{param_name} = {_format_c_literal(literal, c_type)},",file=f)
-            if not node_data["needs_hardware"] and not node_data["fields"]:
-                print("        .reserved = 0,",file=f)
-            print("    },",file=f)
-        print("};",file=f)
+            if node_data["fields"]:
+               if not first:
+                    print(",",file=f)
+               first = False
+               print(f"    .{node_name} = {{",file=f)
+               for param_name, c_type, literal in node_data["fields"]:
+                   print(f"        .{param_name} = {_format_c_literal(literal, c_type)},",file=f)
+               if not node_data["needs_hardware"] and not node_data["fields"]:
+                   print("        .reserved = 0,",file=f)
+               print("    }",file=f,end="")
+        print("\n};",file=f)
         print("",file=f)
         print("void app_params_set_hardware(const HardwareParams *params)",file=f)
         print("{",file=f)

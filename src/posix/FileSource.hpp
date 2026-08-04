@@ -81,8 +81,8 @@ class FileSource final : public arm_cmsis_stream::GenericSource<OUT, outputSampl
         : arm_cmsis_stream::GenericSource<OUT, outputSamples>(dst),
           path_(params.path != nullptr ? params.path : ""),
           mode_(detail::normalizeFileMode(params.mode)),
-          bytesPerRun_(params.bytes_per_run),
-          linesPerRun_(params.lines_per_run)
+          bytesPerRun_(0),
+          linesPerRun_(0)
     {
         const std::ios::openmode openMode =
             mode_ == FileNodeMode::Binary ? std::ios::in | std::ios::binary : std::ios::in;

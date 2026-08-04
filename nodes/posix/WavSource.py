@@ -1,14 +1,6 @@
 from cmsis_stream.cg.scheduler import GenericSource
 
 
-class _CType:
-    def __init__(self, ctype):
-        self.ctype = ctype
-
-
-_CONST_CHAR_PTR = _CType("const char *")
-
-
 def _c_string(value):
     escaped = str(value).replace("\\", "\\\\").replace('"', '\\"')
     return f'"{escaped}"'
@@ -47,7 +39,8 @@ class WavSource(GenericSource):
     def __init__(self, name, theType, outputLength, path, params=None):
         GenericSource.__init__(self, name, identified=True)
         self.params = {
-            "path": (_c_string(path), _CONST_CHAR_PTR),
+            "path": path,
+            "delay": 20,
             **_wav_type_params(theType),
         }
         if params:

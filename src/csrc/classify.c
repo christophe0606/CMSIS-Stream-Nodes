@@ -1,8 +1,12 @@
+#include <math.h>
+#include <stddef.h>
 
-#include "arm_vec_math.h"
 #include "dsp/fast_math_functions.h"
 #include "dsp/statistics_functions.h"
 
+#if defined(ARM_MATH_MVEF) && !defined(ARM_MATH_AUTOVECTORIZE)
+
+#include "arm_vec_math.h"
 
 void node_softmax(float *in, size_t blockSize)
 	{
@@ -48,3 +52,32 @@ void node_softmax(float *in, size_t blockSize)
 		tmp = 1.0f / accum;
 		arm_scale_f32((const float32_t *)in, tmp, in, blockSize);
 	}
+#else
+
+void node_softmax(float *in, size_t blockSize)
+	{
+		float32_t maxVal;
+		float32_t accum = 0.0f;
+		float32_t scale;
+		size_t i;
+
+		if (blockSize == 0U) {
+			return;
+		}
+
+		arm_max_no_idx_f32((const float32_t *)in,
+				       (uint32_t)blockSize,
+				       &maxVal);
+
+		for (i = 0U; i < blockSize; i++) {
+			accum += expf(in[i] - maxVal);
+		}
+
+		scale = 1.0f / accum;
+		arm_scale_f32((const float32_t *)in,
+			      scale,
+			      (float32_t *)in,
+			      (uint32_t)blockSize);
+	}
+
+#endif

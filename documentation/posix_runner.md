@@ -27,6 +27,14 @@ cmake -S posix_runner -B posix_runner/build -DCMSIS_STREAM_INSTALL_PREFIX=C:/cma
 cmake --build posix_runner/build
 ```
 
+If you need TFLite for micro, you need to set some additional options:
+
+```
+cmake -S posix_runner -B posix_runner/build -DUSE_TFLITE=ON -DTFLITE_PATH="" -DCMSIS_STREAM_INSTALL_PREFIX=C:/cmake_packages
+```
+ * `USE_TFLITE` enable a cmake build of TFLite for micro
+ * `TFLITE_PATH` is the path to your clone of TF Lite for micro
+
 Run the application:
 
 ```powershell

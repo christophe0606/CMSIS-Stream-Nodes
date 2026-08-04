@@ -7,3 +7,4 @@ runner_common/.clangd
 run.sh
 run.bat
 *.stackdump
+*.obj

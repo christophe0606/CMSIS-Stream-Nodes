@@ -11,6 +11,9 @@
 #include <cstdint>
 #include <type_traits>
 
+#include <chrono>
+#include <thread>
+
 namespace cmsis_stream_nodes {
 
 struct WavSourceParams {
@@ -84,7 +87,7 @@ class WavSource final : public arm_cmsis_stream::GenericSource<OUT, outputSample
     template <typename Params>
     WavSource(arm_cmsis_stream::FIFOBase<OUT> &dst, const Params &params)
         : arm_cmsis_stream::GenericSource<OUT, outputSamples>(dst),
-          numChannels_(params.num_channels)
+          numChannels_(params.num_channels), delay_(params.delay)
     {
         const char *path = params.path != nullptr ? params.path : "";
         opened_ = tinywav_open_read(&wav_, path, detail::normalizeWavChannelFormat(params.channel_format)) == 0;
@@ -133,6 +136,11 @@ class WavSource final : public arm_cmsis_stream::GenericSource<OUT, outputSample
         detail::copyFromWavFrames(output, frameBuffer_.data(), samplesRead);
         std::fill(output + framesRead, output + outputSamples, OUT{});
 
+        if (delay_ > 0) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(delay_));
+        }
+
+
         return CG_SUCCESS;
     }
 
@@ -141,6 +149,7 @@ class WavSource final : public arm_cmsis_stream::GenericSource<OUT, outputSample
     int32_t numChannels_;
     std::array<float, outputSamples * 2> frameBuffer_{};
     bool opened_ = false;
+    int delay_ = 0;
 };
 
 } // namespace cmsis_stream_nodes

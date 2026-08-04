@@ -4,13 +4,15 @@
 
 AppParams appParams = {
     .src = {
+        .path = "examples/assets/sample_audio.wav",
+        .delay = 500,
         .num_channels = 1,
+        .sample_format = 2,
+        .channel_format = 0,
     },
     .classify = {
         .historyLength = 10,
-    },
-    .kws = {
-    },
+    }
 };
 
 void app_params_set_hardware(const HardwareParams *params)
@@ -18,6 +20,5 @@ void app_params_set_hardware(const HardwareParams *params)
     if (params == 0) {
         return;
     }
-    appParams.src.hw_ = *params;
     appParams.kws.hw_ = *params;
 }

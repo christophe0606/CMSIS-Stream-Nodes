@@ -11,6 +11,8 @@ typedef struct {
     void *microphone_stream;
     int32_t microphone_sample_rate;
     int32_t microphone_num_channels;
+    const uint8_t *model_weights;
+    size_t model_size;
 } HardwareParams;
 
 int hardware_params_init(HardwareParams *params);

@@ -17,7 +17,7 @@
       "SEL_ACK_ID"
     ]
   },
-  "MicrophoneSource<q15_t,320>": {
+  "WavSource<q15_t,320>": {
     "isTemplate": true,
     "selectors": []
   },
