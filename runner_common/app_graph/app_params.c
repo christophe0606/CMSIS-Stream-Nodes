@@ -4,13 +4,10 @@
 
 AppParams appParams = {
     .gain = {
-        .gain = 10.0f,
+        .gain = 4.0f,
     },
     .src = {
         .num_channels = 1,
-    },
-    .classify = {
-        .historyLength = 10,
     }
 };
 
@@ -20,5 +17,4 @@ void app_params_set_hardware(const HardwareParams *params)
         return;
     }
     appParams.src.hw_ = *params;
-    appParams.kws.hw_ = *params;
 }

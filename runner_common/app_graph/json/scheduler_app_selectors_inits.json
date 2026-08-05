@@ -3,25 +3,23 @@
     "isTemplate": true,
     "selectors": []
   },
+  "CFFT<cf32,1024,cf32,1024>": {
+    "isTemplate": true,
+    "selectors": []
+  },
   "Gain<float,320,float,320>": {
     "isTemplate": true,
     "selectors": []
   },
-  "MFCC<float,640,float,10>": {
+  "Spectrogram<cf32,1024>": {
     "isTemplate": true,
     "selectors": []
-  },
-  "SlidingBuffer<float,490,480>": {
-    "isTemplate": true,
-    "selectors": []
-  },
-  "SendToNetwork<float,490>": {
-    "isTemplate": true,
-    "selectors": [
-      "SEL_ACK_ID"
-    ]
   },
   "MicrophoneSource<q15_t,320>": {
+    "isTemplate": true,
+    "selectors": []
+  },
+  "RealToComplex<float,1024,cf32,1024>": {
     "isTemplate": true,
     "selectors": []
   },
@@ -29,14 +27,12 @@
     "isTemplate": true,
     "selectors": []
   },
-  "KWSClassify": {
-    "isTemplate": false,
+  "Hanning<float,640,float,1024>": {
+    "isTemplate": true,
     "selectors": []
   },
-  "KWS": {
+  "SpectrogramTextDisplay": {
     "isTemplate": false,
-    "selectors": [
-      "SEL_ACK_ID"
-    ]
+    "selectors": []
   }
 }

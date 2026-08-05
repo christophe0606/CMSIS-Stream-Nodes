@@ -11,6 +11,12 @@ from .KWS import KWS
 from .KWSClassify import KWSClassify
 from .TFLite import TFLite
 from .Gain import Gain
+from .Hanning import Hanning
+from .CFFT import CFFT
+from .RealToComplex import RealToComplex
+from .Spectrogram import Spectrogram
+from .NullSink import NullSink
+from .SpectrogramTextDisplay import SpectrogramTextDisplay
 
 __all__ = ["Convert",
            "BufferSink",
@@ -24,4 +30,10 @@ __all__ = ["Convert",
            "KWS",
            "KWSClassify",
            "TFLite",
-           "Gain"]
+           "Gain",
+           "Hanning",
+           "CFFT",
+           "RealToComplex",
+           "Spectrogram",
+           "NullSink",
+           "SpectrogramTextDisplay"]
