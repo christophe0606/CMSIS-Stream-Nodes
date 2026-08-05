@@ -20,7 +20,7 @@ build-idx:
         info:
           - CMSIS.cbuild-pack.yml - file is already up-to-date
           - CMSIS+AE722F80F55D5LS.cbuild-run.yml - file is already up-to-date
-          - cmsis_runner.Debug+AE722F80F55D5LS.cbuild.yml - file is already up-to-date
+          - cmsis_runner.Debug+AE722F80F55D5LS.cbuild.yml - file generated successfully
       packs-unused:
         - pack: AlifSemiconductor::AIPL@1.3.0
         - pack: AlifSemiconductor::Dave2DDriver@2.0.1

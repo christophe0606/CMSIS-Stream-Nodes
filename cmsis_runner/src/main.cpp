@@ -24,11 +24,16 @@ void app_main (void *argument)
 
 int main() {
 
-    init_board();
+    osStatus_t err = osOK;
+    int board_error = init_board();
+    if (board_error != 0) {
+        CMSISSTREAM_LOG_ERR("Board initialization failed\n");
+        goto error;
+    }
 
     printf("CMSIS-RTOS Runner\n");
 
-    osStatus_t err = osKernelInitialize();
+    err = osKernelInitialize();
     if (err != osOK) {
         CMSISSTREAM_LOG_ERR("Kernel initialization failed\n");
         goto error;

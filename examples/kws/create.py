@@ -70,7 +70,7 @@ else:
 if mic_channels == 2:
    to_mono = InterleavedStereoToMono("to_mono",Q15_SCALAR,NB)
 
-gain = Gain("gain",Q15_SCALAR,NB,10)
+gain = Gain("gain",Q15_SCALAR,NB,1)
 to_f32 = Convert("to_f32",Q15_SCALAR,F32_SCALAR,NB)
 
 audioWin=SlidingBuffer("audioWin",CType(F32),NB_WINDOW_SAMPLES,NB_OVERLAP_SAMPLES)

@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 /* Prototypes */
-extern void init_board(void);
+extern int init_board(void);
 
 
 #ifdef __cplusplus

@@ -30,6 +30,10 @@
 
 #include "se_services_port.h"
 
+#include <stdio.h>
+#include <inttypes.h>
+
+
 extern int shield_setup(void);
 extern int stdio_init(void);
 
@@ -78,6 +82,28 @@ int32_t NpuInit(void)
         /* Failed to initialize Arm Ethos-U driver */
         return 1;
     }
+
+    printf("Ethos-U device initialised\n");
+
+    /* Get Ethos-U version */
+    struct ethosu_driver_version driver_version;
+    struct ethosu_hw_info hw_info;
+
+    ethosu_get_driver_version(&driver_version);
+    ethosu_get_hw_info(&EthosDriver, &hw_info);
+
+    printf("Ethos-U version info:\n");
+    printf("\tArch:       v%" PRIu32 ".%" PRIu32 ".%" PRIu32 " \n",
+         hw_info.version.arch_major_rev,
+         hw_info.version.arch_minor_rev,
+         hw_info.version.arch_patch_rev);
+    printf("\tDriver:     v%d.%d.%d\n",
+         driver_version.major,
+         driver_version.minor,
+         driver_version.patch);
+    printf("\tMACs/cc:    %" PRIu32 "\n", (uint32_t)(1 << hw_info.cfg.macs_per_cc));
+    printf("\tCmd stream: v%" PRIu32 "\n", hw_info.cfg.cmd_stream_version);
+
 
     NVIC_EnableIRQ(NPULOCAL_IRQ_IRQn);
 
@@ -128,7 +154,7 @@ static void CpuCacheEnable(void)
     SCB_EnableDCache();
 }
 
-void init_board(void)
+int init_board(void)
 {
 
     /* Apply pin configuration */
@@ -152,7 +178,10 @@ void init_board(void)
     vioInit();
 
     /* Initialize Ethos NPU */
-    NpuInit();
+    int err = NpuInit();
+    if (err != 0) {
+        return 1;
+    }
 
 #ifdef CMSIS_shield_header
     shield_setup();
@@ -161,5 +190,5 @@ void init_board(void)
     /* Enable the CPU Cache */
     CpuCacheEnable();
 
-    
+    return 0;
 }

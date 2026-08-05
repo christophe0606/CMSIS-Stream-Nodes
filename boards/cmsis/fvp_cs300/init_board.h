@@ -1,1 +1,1 @@
-extern void init_board(void);
+extern int init_board(void);

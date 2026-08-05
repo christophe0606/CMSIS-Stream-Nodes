@@ -4,7 +4,7 @@
 
 AppParams appParams = {
     .gain = {
-        .gain = 10.0f,
+        .gain = 1.0f,
     },
     .src = {
         .num_channels = 2,

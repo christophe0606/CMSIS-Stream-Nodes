@@ -77,10 +77,13 @@ int32_t NpuInit(void)
     return 0;
 }
 
-void init_board(void)
+int init_board(void)
 {
     /* Initialize the board */
-    NpuInit();
+    int err = NpuInit();
+    if (err != 0) {
+        return 1;
+    }
 
     /* Enable I-Cache */
     SCB_EnableICache();
