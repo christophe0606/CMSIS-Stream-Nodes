@@ -10,6 +10,7 @@ from .SendToNetwork import SendToNetwork
 from .KWS import KWS
 from .KWSClassify import KWSClassify
 from .TFLite import TFLite
+from .Gain import Gain
 
 __all__ = ["Convert",
            "BufferSink",
@@ -22,4 +23,5 @@ __all__ = ["Convert",
            "SendToNetwork",
            "KWS",
            "KWSClassify",
-           "TFLite"]
+           "TFLite",
+           "Gain"]

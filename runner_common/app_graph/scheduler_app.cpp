@@ -91,9 +91,9 @@ using namespace arm_cmsis_stream;
 Description of the scheduling. 
 
 */
-static uint8_t schedule[6]=
+static uint8_t schedule[7]=
 { 
-4,5,0,1,2,3,
+5,6,1,0,2,3,4,
 };
 
 /*
@@ -102,13 +102,14 @@ Internal ID identification for the nodes
 
 */
 #define AUDIOWIN_INTERNAL_ID 0
-#define MFCC_INTERNAL_ID 1
-#define MFCCWIN_INTERNAL_ID 2
-#define SEND_INTERNAL_ID 3
-#define SRC_INTERNAL_ID 4
-#define TO_F32_INTERNAL_ID 5
-#define CLASSIFY_INTERNAL_ID 6
-#define KWS_INTERNAL_ID 7
+#define GAIN_INTERNAL_ID 1
+#define MFCC_INTERNAL_ID 2
+#define MFCCWIN_INTERNAL_ID 3
+#define SEND_INTERNAL_ID 4
+#define SRC_INTERNAL_ID 5
+#define TO_F32_INTERNAL_ID 6
+#define CLASSIFY_INTERNAL_ID 7
+#define KWS_INTERNAL_ID 8
 
 /* Initialize the selectors global IDs in each class */
 template<>
@@ -131,15 +132,16 @@ FIFO buffers
 ************/
 #define FIFOSIZE0 320
 #define FIFOSIZE1 320
-#define FIFOSIZE2 640
-#define FIFOSIZE3 10
-#define FIFOSIZE4 490
+#define FIFOSIZE2 320
+#define FIFOSIZE3 640
+#define FIFOSIZE4 10
+#define FIFOSIZE5 490
 
-#define BUFFERSIZE0 1280
+#define BUFFERSIZE0 2560
 CG_BEFORE_BUFFER
 uint8_t stream_app_buf0[BUFFERSIZE0]={0};
 
-#define BUFFERSIZE1 2560
+#define BUFFERSIZE1 1280
 CG_BEFORE_BUFFER
 uint8_t stream_app_buf1[BUFFERSIZE1]={0};
 
@@ -150,10 +152,12 @@ FIFO<float,FIFOSIZE1,1,0> *fifo1;
 FIFO<float,FIFOSIZE2,1,0> *fifo2;
 FIFO<float,FIFOSIZE3,1,0> *fifo3;
 FIFO<float,FIFOSIZE4,1,0> *fifo4;
+FIFO<float,FIFOSIZE5,1,0> *fifo5;
 } fifos_t;
 
 typedef struct {
     SlidingBuffer<float,640,320> *audioWin;
+    Gain<float,320,float,320> *gain;
     MFCC<float,640,float,10> *mfcc;
     SlidingBuffer<float,490,480> *mfccWin;
     SendToNetwork<float,490> *send;
@@ -212,11 +216,16 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
+    fifos.fifo5 = new (std::nothrow) FIFO<float,FIFOSIZE5,1,0>(stream_app_buf0);
+    if (fifos.fifo5==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
 
     CG_BEFORE_NODE_INIT;
     cg_status initError;
 
-    nodes.audioWin = new (std::nothrow) SlidingBuffer<float,640,320>(*(fifos.fifo1),*(fifos.fifo2));
+    nodes.audioWin = new (std::nothrow) SlidingBuffer<float,640,320>(*(fifos.fifo2),*(fifos.fifo3));
     if (nodes.audioWin==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -224,7 +233,13 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_AUDIOWIN_ID]=createStreamNode(*nodes.audioWin);
     nodes.audioWin->setID(STREAM_APP_AUDIOWIN_ID);
 
-    nodes.mfcc = new (std::nothrow) MFCC<float,640,float,10>(*(fifos.fifo2),*(fifos.fifo3));
+    nodes.gain = new (std::nothrow) Gain<float,320,float,320>(*(fifos.fifo1),*(fifos.fifo2),params->gain);
+    if (nodes.gain==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+
+    nodes.mfcc = new (std::nothrow) MFCC<float,640,float,10>(*(fifos.fifo3),*(fifos.fifo4));
     if (nodes.mfcc==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -232,7 +247,7 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_MFCC_ID]=createStreamNode(*nodes.mfcc);
     nodes.mfcc->setID(STREAM_APP_MFCC_ID);
 
-    nodes.mfccWin = new (std::nothrow) SlidingBuffer<float,490,480>(*(fifos.fifo3),*(fifos.fifo4));
+    nodes.mfccWin = new (std::nothrow) SlidingBuffer<float,490,480>(*(fifos.fifo4),*(fifos.fifo5));
     if (nodes.mfccWin==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -240,7 +255,7 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_MFCCWIN_ID]=createStreamNode(*nodes.mfccWin);
     nodes.mfccWin->setID(STREAM_APP_MFCCWIN_ID);
 
-    nodes.send = new (std::nothrow) SendToNetwork<float,490>(*(fifos.fifo4),evtQueue);
+    nodes.send = new (std::nothrow) SendToNetwork<float,490>(*(fifos.fifo5),evtQueue);
     if (nodes.send==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -288,6 +303,10 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
 
     initError = CG_SUCCESS;
     initError = nodes.audioWin->init();
+    if (initError != CG_SUCCESS)
+        return(initError);
+    
+    initError = nodes.gain->init();
     if (initError != CG_SUCCESS)
         return(initError);
     
@@ -348,10 +367,18 @@ void free_scheduler_app()
     {
        delete fifos.fifo4;
     }
+    if (fifos.fifo5!=NULL)
+    {
+       delete fifos.fifo5;
+    }
 
     if (nodes.audioWin!=NULL)
     {
         delete nodes.audioWin;
+    }
+    if (nodes.gain!=NULL)
+    {
+        delete nodes.gain;
     }
     if (nodes.mfcc!=NULL)
     {
@@ -405,6 +432,10 @@ void reset_fifos_scheduler_app(int all)
     {
        fifos.fifo4->reset();
     }
+    if (fifos.fifo5!=NULL)
+    {
+       fifos.fifo5->reset();
+    }
    // Buffers are set to zero too
    if (all)
    {
@@ -432,7 +463,7 @@ uint32_t scheduler_app(int *error)
         /* Run a schedule iteration */
         CG_BEFORE_ITERATION;
         unsigned long id=0;
-        for(; id < 6; id++)
+        for(; id < 7; id++)
         {
             CG_BEFORE_NODE_EXECUTION(schedule[id]);
             switch(schedule[id])
@@ -447,32 +478,39 @@ uint32_t scheduler_app(int *error)
                 case 1:
                 {
                     
-                   cgStaticError = nodes.mfcc->run();
+                   cgStaticError = nodes.gain->run();
                 }
                 break;
 
                 case 2:
                 {
                     
-                   cgStaticError = nodes.mfccWin->run();
+                   cgStaticError = nodes.mfcc->run();
                 }
                 break;
 
                 case 3:
                 {
                     
-                   cgStaticError = nodes.send->run();
+                   cgStaticError = nodes.mfccWin->run();
                 }
                 break;
 
                 case 4:
                 {
                     
-                   cgStaticError = nodes.src->run();
+                   cgStaticError = nodes.send->run();
                 }
                 break;
 
                 case 5:
+                {
+                    
+                   cgStaticError = nodes.src->run();
+                }
+                break;
+
+                case 6:
                 {
                     
                    cgStaticError = nodes.to_f32->run();

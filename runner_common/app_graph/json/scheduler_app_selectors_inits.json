@@ -3,6 +3,10 @@
     "isTemplate": true,
     "selectors": []
   },
+  "Gain<float,320,float,320>": {
+    "isTemplate": true,
+    "selectors": []
+  },
   "MFCC<float,640,float,10>": {
     "isTemplate": true,
     "selectors": []

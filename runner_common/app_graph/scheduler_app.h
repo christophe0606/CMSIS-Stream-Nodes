@@ -32,7 +32,7 @@ extern "C"
 #define STREAM_APP_CLASSIFY_ID 6
 #define STREAM_APP_KWS_ID 7
 
-#define STREAM_APP_SCHED_LEN 6
+#define STREAM_APP_SCHED_LEN 7
 
 /* Selectors global identifiers */
 #define SEL_ACK_ID 100 

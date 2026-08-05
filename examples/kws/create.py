@@ -9,7 +9,7 @@ if REPO_ROOT.exists() and path_text not in sys.path:
 from cmsis_stream.cg.scheduler import Graph,CType,SINT16,F32,Q15
 from examples.common.app import configure_app_from_args, mk_app, get_app_config
 from nodes.generic import MicrophoneSource, Convert, SlidingBuffer, SendToNetwork
-from nodes.generic import MFCC, KWS, KWSClassify
+from nodes.generic import MFCC, KWS, KWSClassify, Gain
 
 config = configure_app_from_args()
 
@@ -58,7 +58,9 @@ if get_app_config().runner == "posix":
     src = WavSource("src", sample_type, NB_AUDIO_SAMPLES,"examples/assets/sample_audio.wav",params={"delay": 500})
 else:
     src = MicrophoneSource("src", sample_type, NB_AUDIO_SAMPLES)
+
 to_f32 = Convert("to_f32",Q15_SCALAR,F32_SCALAR,NB)
+gain = Gain("gain",F32_SCALAR,NB,10)
 
 audioWin=SlidingBuffer("audioWin",CType(F32),NB_WINDOW_SAMPLES,NB_OVERLAP_SAMPLES)
 mfcc=MFCC("mfcc",NB_WINDOW_SAMPLES,MFCC_FEATURES)
@@ -73,7 +75,8 @@ classify = KWSClassify("classify",
                        params={"historyLength":10})
 
 the_graph.connect(src.o,to_f32.i)
-the_graph.connect(to_f32.o,audioWin.i)
+the_graph.connect(to_f32.o,gain.i)
+the_graph.connect(gain.o,audioWin.i)
 the_graph.connect(audioWin.o,mfcc.i)
 the_graph.connect(mfcc.o,mfccWin.i)
 the_graph.connect(mfccWin.o,send.i)

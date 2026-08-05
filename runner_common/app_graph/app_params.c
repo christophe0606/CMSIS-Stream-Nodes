@@ -3,6 +3,9 @@
 #include <math.h>
 
 AppParams appParams = {
+    .gain = {
+        .gain = 10.0f,
+    },
     .src = {
         .num_channels = 1,
     },

@@ -40,6 +40,7 @@ The format of this network depends on the target : posix or Ethos.
 The network is selected in `app.py` when running the python script `create.py` for a given application.
 
 The demos have differences :
+
 * Computations use different kernel implementations in TFLite
 * real-time may not always be respected so that the network do not always see the same audio segment depending on the platform
 

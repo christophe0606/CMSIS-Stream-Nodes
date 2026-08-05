@@ -13,6 +13,10 @@
 #define VSI0_FILE_PATH "examples/assets/sample_audio.wav"
 
 typedef struct {
+    float gain;
+} GainParams;
+
+typedef struct {
     HardwareParams hw_;
     int32_t num_channels;
 } MicrophoneSourceParams;
@@ -26,6 +30,7 @@ typedef struct {
 } KWSParams;
 
 typedef struct {
+    GainParams gain;
     MicrophoneSourceParams src;
     KWSClassifyParams classify;
     KWSParams kws;
