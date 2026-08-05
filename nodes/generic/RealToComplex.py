@@ -7,10 +7,10 @@ _Q15_COMPLEX = CStructType("cq15",4)
 class RealToComplex(GenericNode):
     def __init__(self,name,theType,outLength):
         GenericNode.__init__(self,name,identified=False)
-        if theType == F32:
+        if theType._id == F32:
             inputType = CType(F32)
             outputType = _F32_COMPLEX
-        elif theType == Q15:
+        elif theType._id == Q15:
             inputType = CType(Q15)
             outputType = _Q15_COMPLEX
         else:

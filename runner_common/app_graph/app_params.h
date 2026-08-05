@@ -5,12 +5,12 @@
 #include <stdint.h>
 #include "hardware_params.h"
 
-#define MIC_BLOCK_SIZE 640
+#define MIC_BLOCK_SIZE 1280
 #define MIC_SAMPLE_RATE 16000
-#define MIC_CHANNELS 1
+#define MIC_CHANNELS 2
 #define MIC_FRAMES_PER_BUFFER 0
 #define MIC_SAMPLE_SIZE 16
-#define CONFIG_NB_BINS 10
+#define CONFIG_NB_BINS 80
 #define VSI0_FILE_PATH "examples/assets/sample_audio.wav"
 
 typedef struct {

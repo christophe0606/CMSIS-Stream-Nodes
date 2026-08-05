@@ -7,5 +7,6 @@
 #include "cmsis/MicrophoneSource.hpp"
 #include "generic/RealToComplex.hpp"
 #include "generic/Convert.hpp"
+#include "generic/InterleavedStereoToMono.hpp"
 #include "generic/Hanning.hpp"
 #include "generic/SpectrogramTextDisplay.hpp"

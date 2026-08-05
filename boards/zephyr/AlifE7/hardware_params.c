@@ -32,8 +32,8 @@
 
 BUILD_ASSERT(MIC_SAMPLE_RATE > 0, "MIC_SAMPLE_RATE must be greater than zero");
 BUILD_ASSERT(MIC_SAMPLE_SIZE == 16, "The AlifE7 microphone path supports 16-bit PCM only");
-BUILD_ASSERT((MIC_CHANNELS == 1) || (MIC_CHANNELS == 2),
-             "The AlifE7 I2S driver supports one or two channels");
+BUILD_ASSERT((MIC_CHANNELS == 2),
+             "The AlifE7 I2S driver supports two channels");
 BUILD_ASSERT((MIC_BLOCK_SIZE % (MIC_CHANNELS * (MIC_SAMPLE_SIZE / 8))) == 0,
              "MIC_BLOCK_SIZE must contain a whole number of audio frames");
 BUILD_ASSERT((MIC_BLOCK_SIZE % 4) == 0, "The I2S buffer size must be a multiple of 4");

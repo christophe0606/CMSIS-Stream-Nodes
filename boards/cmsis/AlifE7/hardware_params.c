@@ -21,6 +21,10 @@
 
 #define AUDIO_SOURCE_BLOCK_COUNT (2U)
 
+#if (MIC_CHANNELS != 2U)
+#error "MIC_CHANNELS must be 2 for AlifE7"
+#endif
+
 extern vStreamDriver_t Driver_vStreamAudioIn;
 
 static int16_t audio_buffer[AUDIO_SOURCE_BLOCK_COUNT * MIC_BLOCK_SIZE * MIC_CHANNELS];

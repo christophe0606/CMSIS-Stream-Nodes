@@ -91,9 +91,9 @@ using namespace arm_cmsis_stream;
 Description of the scheduling. 
 
 */
-static uint8_t schedule[8]=
+static uint8_t schedule[9]=
 { 
-4,6,2,0,7,5,1,3,
+4,6,7,2,0,8,5,1,3,
 };
 
 /*
@@ -108,8 +108,9 @@ Internal ID identification for the nodes
 #define SRC_INTERNAL_ID 4
 #define TOCOMPLEX_INTERNAL_ID 5
 #define TO_F32_INTERNAL_ID 6
-#define WINLEFT_INTERNAL_ID 7
-#define DISPLAY_INTERNAL_ID 8
+#define TO_MONO_INTERNAL_ID 7
+#define WINLEFT_INTERNAL_ID 8
+#define DISPLAY_INTERNAL_ID 9
 
 
 
@@ -129,10 +130,11 @@ FIFO buffers
 #define FIFOSIZE0 320
 #define FIFOSIZE1 320
 #define FIFOSIZE2 320
-#define FIFOSIZE3 640
-#define FIFOSIZE4 1024
+#define FIFOSIZE3 320
+#define FIFOSIZE4 640
 #define FIFOSIZE5 1024
 #define FIFOSIZE6 1024
+#define FIFOSIZE7 1024
 
 #define BUFFERSIZE0 8192
 CG_BEFORE_BUFFER
@@ -144,13 +146,14 @@ uint8_t stream_app_buf1[BUFFERSIZE1]={0};
 
 
 typedef struct {
-FIFO<q15_t,FIFOSIZE0,1,0> *fifo0;
-FIFO<float,FIFOSIZE1,1,0> *fifo1;
+FIFO<sq15,FIFOSIZE0,1,0> *fifo0;
+FIFO<sf32,FIFOSIZE1,1,0> *fifo1;
 FIFO<float,FIFOSIZE2,1,0> *fifo2;
 FIFO<float,FIFOSIZE3,1,0> *fifo3;
 FIFO<float,FIFOSIZE4,1,0> *fifo4;
-FIFO<cf32,FIFOSIZE5,1,0> *fifo5;
+FIFO<float,FIFOSIZE5,1,0> *fifo5;
 FIFO<cf32,FIFOSIZE6,1,0> *fifo6;
+FIFO<cf32,FIFOSIZE7,1,0> *fifo7;
 } fifos_t;
 
 typedef struct {
@@ -158,9 +161,10 @@ typedef struct {
     CFFT<cf32,1024,cf32,1024> *fft;
     Gain<float,320,float,320> *gain;
     Spectrogram<cf32,1024> *spectrogram;
-    MicrophoneSource<q15_t,320> *src;
+    MicrophoneSource<sq15,320> *src;
     RealToComplex<float,1024,cf32,1024> *toComplex;
-    Convert<q15_t,320,float,320> *to_f32;
+    Convert<sq15,320,sf32,320> *to_f32;
+    InterleavedStereoToMono<sf32,320,float,320> *to_mono;
     Hanning<float,640,float,1024> *winLeft;
     SpectrogramTextDisplay *display;
 } nodes_t;
@@ -189,12 +193,12 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     (void)evtQueue;
 
     CG_BEFORE_FIFO_INIT;
-    fifos.fifo0 = new (std::nothrow) FIFO<q15_t,FIFOSIZE0,1,0>(stream_app_buf1);
+    fifos.fifo0 = new (std::nothrow) FIFO<sq15,FIFOSIZE0,1,0>(stream_app_buf1);
     if (fifos.fifo0==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
-    fifos.fifo1 = new (std::nothrow) FIFO<float,FIFOSIZE1,1,0>(stream_app_buf0);
+    fifos.fifo1 = new (std::nothrow) FIFO<sf32,FIFOSIZE1,1,0>(stream_app_buf0);
     if (fifos.fifo1==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -214,7 +218,7 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
-    fifos.fifo5 = new (std::nothrow) FIFO<cf32,FIFOSIZE5,1,0>(stream_app_buf0);
+    fifos.fifo5 = new (std::nothrow) FIFO<float,FIFOSIZE5,1,0>(stream_app_buf0);
     if (fifos.fifo5==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -224,11 +228,16 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
+    fifos.fifo7 = new (std::nothrow) FIFO<cf32,FIFOSIZE7,1,0>(stream_app_buf0);
+    if (fifos.fifo7==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
 
     CG_BEFORE_NODE_INIT;
     cg_status initError;
 
-    nodes.audioWin = new (std::nothrow) SlidingBuffer<float,640,320>(*(fifos.fifo2),*(fifos.fifo3));
+    nodes.audioWin = new (std::nothrow) SlidingBuffer<float,640,320>(*(fifos.fifo3),*(fifos.fifo4));
     if (nodes.audioWin==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -236,25 +245,25 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_AUDIOWIN_ID]=createStreamNode(*nodes.audioWin);
     nodes.audioWin->setID(STREAM_APP_AUDIOWIN_ID);
 
-    nodes.fft = new (std::nothrow) CFFT<cf32,1024,cf32,1024>(*(fifos.fifo5),*(fifos.fifo6));
+    nodes.fft = new (std::nothrow) CFFT<cf32,1024,cf32,1024>(*(fifos.fifo6),*(fifos.fifo7));
     if (nodes.fft==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
 
-    nodes.gain = new (std::nothrow) Gain<float,320,float,320>(*(fifos.fifo1),*(fifos.fifo2),params->gain);
+    nodes.gain = new (std::nothrow) Gain<float,320,float,320>(*(fifos.fifo2),*(fifos.fifo3),params->gain);
     if (nodes.gain==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
 
-    nodes.spectrogram = new (std::nothrow) Spectrogram<cf32,1024>(*(fifos.fifo6),evtQueue);
+    nodes.spectrogram = new (std::nothrow) Spectrogram<cf32,1024>(*(fifos.fifo7),evtQueue);
     if (nodes.spectrogram==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
 
-    nodes.src = new (std::nothrow) MicrophoneSource<q15_t,320>(*(fifos.fifo0),params->src);
+    nodes.src = new (std::nothrow) MicrophoneSource<sq15,320>(*(fifos.fifo0),params->src);
     if (nodes.src==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -262,13 +271,13 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_SRC_ID]=createStreamNode(*nodes.src);
     nodes.src->setID(STREAM_APP_SRC_ID);
 
-    nodes.toComplex = new (std::nothrow) RealToComplex<float,1024,cf32,1024>(*(fifos.fifo4),*(fifos.fifo5));
+    nodes.toComplex = new (std::nothrow) RealToComplex<float,1024,cf32,1024>(*(fifos.fifo5),*(fifos.fifo6));
     if (nodes.toComplex==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
     }
 
-    nodes.to_f32 = new (std::nothrow) Convert<q15_t,320,float,320>(*(fifos.fifo0),*(fifos.fifo1));
+    nodes.to_f32 = new (std::nothrow) Convert<sq15,320,sf32,320>(*(fifos.fifo0),*(fifos.fifo1));
     if (nodes.to_f32==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -276,7 +285,13 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
     identifiedNodes[STREAM_APP_TO_F32_ID]=createStreamNode(*nodes.to_f32);
     nodes.to_f32->setID(STREAM_APP_TO_F32_ID);
 
-    nodes.winLeft = new (std::nothrow) Hanning<float,640,float,1024>(*(fifos.fifo3),*(fifos.fifo4));
+    nodes.to_mono = new (std::nothrow) InterleavedStereoToMono<sf32,320,float,320>(*(fifos.fifo1),*(fifos.fifo2));
+    if (nodes.to_mono==NULL)
+    {
+        return(CG_MEMORY_ALLOCATION_FAILURE);
+    }
+
+    nodes.winLeft = new (std::nothrow) Hanning<float,640,float,1024>(*(fifos.fifo4),*(fifos.fifo5));
     if (nodes.winLeft==NULL)
     {
         return(CG_MEMORY_ALLOCATION_FAILURE);
@@ -320,6 +335,10 @@ int init_scheduler_app(void *evtQueue_,AppParams *params)
         return(initError);
     
     initError = nodes.to_f32->init();
+    if (initError != CG_SUCCESS)
+        return(initError);
+    
+    initError = nodes.to_mono->init();
     if (initError != CG_SUCCESS)
         return(initError);
     
@@ -368,6 +387,10 @@ void free_scheduler_app()
     {
        delete fifos.fifo6;
     }
+    if (fifos.fifo7!=NULL)
+    {
+       delete fifos.fifo7;
+    }
 
     if (nodes.audioWin!=NULL)
     {
@@ -396,6 +419,10 @@ void free_scheduler_app()
     if (nodes.to_f32!=NULL)
     {
         delete nodes.to_f32;
+    }
+    if (nodes.to_mono!=NULL)
+    {
+        delete nodes.to_mono;
     }
     if (nodes.winLeft!=NULL)
     {
@@ -437,6 +464,10 @@ void reset_fifos_scheduler_app(int all)
     {
        fifos.fifo6->reset();
     }
+    if (fifos.fifo7!=NULL)
+    {
+       fifos.fifo7->reset();
+    }
    // Buffers are set to zero too
    if (all)
    {
@@ -464,7 +495,7 @@ uint32_t scheduler_app(int *error)
         /* Run a schedule iteration */
         CG_BEFORE_ITERATION;
         unsigned long id=0;
-        for(; id < 8; id++)
+        for(; id < 9; id++)
         {
             CG_BEFORE_NODE_EXECUTION(schedule[id]);
             switch(schedule[id])
@@ -519,6 +550,13 @@ uint32_t scheduler_app(int *error)
                 break;
 
                 case 7:
+                {
+                    
+                   cgStaticError = nodes.to_mono->run();
+                }
+                break;
+
+                case 8:
                 {
                     
                    cgStaticError = nodes.winLeft->run();

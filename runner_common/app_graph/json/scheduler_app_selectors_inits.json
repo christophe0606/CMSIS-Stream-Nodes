@@ -15,7 +15,7 @@
     "isTemplate": true,
     "selectors": []
   },
-  "MicrophoneSource<q15_t,320>": {
+  "MicrophoneSource<sq15,320>": {
     "isTemplate": true,
     "selectors": []
   },
@@ -23,7 +23,11 @@
     "isTemplate": true,
     "selectors": []
   },
-  "Convert<q15_t,320,float,320>": {
+  "Convert<sq15,320,sf32,320>": {
+    "isTemplate": true,
+    "selectors": []
+  },
+  "InterleavedStereoToMono<sf32,320,float,320>": {
     "isTemplate": true,
     "selectors": []
   },

@@ -10,15 +10,18 @@ from cmsis_stream.cg.scheduler import CStructType, Graph,CType,Q15,F32
 from examples.common.app import configure_app_from_args, mk_app
 from nodes.generic import MicrophoneSource,Gain,Convert,SlidingBuffer,Hanning
 from nodes.generic import RealToComplex,CFFT
-from nodes.generic import Spectrogram, SpectrogramTextDisplay
+from nodes.generic import Spectrogram, SpectrogramTextDisplay,InterleavedStereoToMono
 
 config = configure_app_from_args()
 
 the_graph = Graph()
 
 Q15_SCALAR = CType(Q15)
+Q15_STEREO = CStructType("sq15",4)
+
 F32_SCALAR = CType(F32)
 F32_COMPLEX = CStructType("cf32",8)
+F32_STEREO = CStructType("sf32",8)
 
 
 SAMPLING_FREQ_HZ = 16000
@@ -34,24 +37,38 @@ FFT_SIZE = 1024 # 512
 
     
 mic_sample_rate = SAMPLING_FREQ_HZ
-mic_channels = 1
+if config.board == "AlifE7":
+   mic_channels = 2
+else:
+   mic_channels = 1
 mic_frames_per_buffer = 0 # only used for posix portaudio
 
 NB = NB_AUDIO_SAMPLES
 
 #src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
-src = MicrophoneSource("src", Q15_SCALAR, NB)
-to_f32 = Convert("to_f32",Q15_SCALAR,F32_SCALAR,NB)
-gain = Gain("gain",F32_SCALAR,NB,4)
+if mic_channels == 2:
+   src = MicrophoneSource("src", Q15_STEREO, NB)
+   to_f32 = Convert("to_f32",Q15_STEREO,F32_STEREO,NB)
+   to_mono = InterleavedStereoToMono("to_mono",F32_SCALAR,NB)
+else:
+   src = MicrophoneSource("src", Q15_SCALAR, NB)
+   to_f32 = Convert("to_f32",Q15_SCALAR,F32_SCALAR,NB)
+gain = Gain("gain",F32_SCALAR,NB,2)
 audioWin=SlidingBuffer("audioWin",CType(F32),NB_WINDOW_SAMPLES,NB_OVERLAP_SAMPLES)
 win = Hanning("winLeft",NB_WINDOW_SAMPLES,FFT_SIZE)
-to_complex = RealToComplex("toComplex",F32,FFT_SIZE)
+to_complex = RealToComplex("toComplex",CType(F32),FFT_SIZE)
 fft= CFFT("fft",F32_COMPLEX,FFT_SIZE)
 spectrogram = Spectrogram("spectrogram",FFT_SIZE)
 display = SpectrogramTextDisplay("display")
 
-the_graph.connect(src.o,to_f32.i)
-the_graph.connect(to_f32.o,gain.i)
+if mic_channels == 2:
+    the_graph.connect(src.o,to_f32.i)
+    the_graph.connect(to_f32.o,to_mono.i)
+    the_graph.connect(to_mono.o,gain.i)
+else:
+   the_graph.connect(src.o,to_f32.i)
+   the_graph.connect(to_f32.o,gain.i)
+
 the_graph.connect(gain.o,audioWin.i)
 the_graph.connect(audioWin.o,win.i)
 the_graph.connect(win.o,to_complex.i)
@@ -67,7 +84,7 @@ mk_app(
         "MIC_CHANNELS": mic_channels,
         "MIC_FRAMES_PER_BUFFER": mic_frames_per_buffer,
         "MIC_SAMPLE_SIZE" :  Q15_SCALAR.bytes * 8,
-        "CONFIG_NB_BINS" : 10,
+        "CONFIG_NB_BINS" : 80,
         "VSI0_FILE_PATH": '"examples/assets/sample_audio.wav"',
     },
     config=config

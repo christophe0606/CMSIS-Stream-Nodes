@@ -17,6 +17,7 @@ from .RealToComplex import RealToComplex
 from .Spectrogram import Spectrogram
 from .NullSink import NullSink
 from .SpectrogramTextDisplay import SpectrogramTextDisplay
+from .InterleavedStereoToMono import InterleavedStereoToMono
 
 __all__ = ["Convert",
            "BufferSink",
@@ -36,4 +37,5 @@ __all__ = ["Convert",
            "RealToComplex",
            "Spectrogram",
            "NullSink",
-           "SpectrogramTextDisplay"]
+           "SpectrogramTextDisplay",
+           "InterleavedStereoToMono"]

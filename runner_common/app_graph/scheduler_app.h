@@ -28,7 +28,7 @@ extern "C"
 #define STREAM_APP_TO_F32_ID 2
 #define STREAM_APP_DISPLAY_ID 3
 
-#define STREAM_APP_SCHED_LEN 8
+#define STREAM_APP_SCHED_LEN 9
 
 
 extern CStreamNode* get_scheduler_app_node(int32_t nodeID);
