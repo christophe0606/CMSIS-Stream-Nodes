@@ -1,9 +1,9 @@
-from cmsis_stream.cg.scheduler import GenericNode,CType,F32
+from cmsis_stream.cg.scheduler import GenericNode
 
 class SlidingBuffer(GenericNode):
 
     def __init__(self,name,theType,length,overlap):
-        GenericNode.__init__(self,name)
+        GenericNode.__init__(self,name,identified=True)
         self._length = length 
         self._overlap = overlap 
         self.addInput("i",theType,length-overlap)

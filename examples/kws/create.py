@@ -6,10 +6,10 @@ path_text = str(REPO_ROOT)
 if REPO_ROOT.exists() and path_text not in sys.path:
     sys.path.insert(0, path_text)
 
-from cmsis_stream.cg.scheduler import Graph,CType,SINT16,F32,Q15
+from cmsis_stream.cg.scheduler import Graph,CType,F32,Q15, CStructType
 from examples.common.app import configure_app_from_args, mk_app, get_app_config
 from nodes.generic import MicrophoneSource, Convert, SlidingBuffer, SendToNetwork
-from nodes.generic import MFCC, KWS, KWSClassify, Gain
+from nodes.generic import MFCC, KWS, KWSClassify, Gain, InterleavedStereoToMono
 
 config = configure_app_from_args()
 
@@ -22,8 +22,10 @@ OVERLAP_DURATION = 20
 WINDOWS_DURATION = 40 
 
 mic_sample_rate = 16000
-# Stereo source for microphone hardware, but only one channel is used for the KWS application
-mic_channels = 1
+if config.board == "AlifE7":
+   mic_channels = 2
+else:
+   mic_channels = 1
 mic_frames_per_buffer = 0 # only used for posix portaudio
 
 
@@ -44,6 +46,9 @@ NB = NB_AUDIO_SAMPLES
 Q15_SCALAR = CType(Q15)
 F32_SCALAR = CType(F32)
 
+Q15_STEREO = CStructType("sq15",4)
+F32_STEREO = CStructType("sf32",8)
+
 # For debug only
 if get_app_config().runner == "posix":
     from nodes.posix import WavSource
@@ -57,10 +62,16 @@ if get_app_config().runner == "posix":
     # since the network processing takes too much time.
     src = WavSource("src", sample_type, NB_AUDIO_SAMPLES,"examples/assets/sample_audio.wav",params={"delay": 500})
 else:
-    src = MicrophoneSource("src", sample_type, NB_AUDIO_SAMPLES)
+    if mic_channels == 2:
+        src = MicrophoneSource("src", Q15_STEREO, NB)
+    else:
+        src = MicrophoneSource("src", sample_type, NB)
 
+if mic_channels == 2:
+   to_mono = InterleavedStereoToMono("to_mono",Q15_SCALAR,NB)
+
+gain = Gain("gain",Q15_SCALAR,NB,10)
 to_f32 = Convert("to_f32",Q15_SCALAR,F32_SCALAR,NB)
-gain = Gain("gain",F32_SCALAR,NB,10)
 
 audioWin=SlidingBuffer("audioWin",CType(F32),NB_WINDOW_SAMPLES,NB_OVERLAP_SAMPLES)
 mfcc=MFCC("mfcc",NB_WINDOW_SAMPLES,MFCC_FEATURES)
@@ -74,9 +85,14 @@ kws = KWS("kws")
 classify = KWSClassify("classify",
                        params={"historyLength":10})
 
-the_graph.connect(src.o,to_f32.i)
-the_graph.connect(to_f32.o,gain.i)
-the_graph.connect(gain.o,audioWin.i)
+if mic_channels == 2:
+    the_graph.connect(src.o,to_mono.i)
+    the_graph.connect(to_mono.o,gain.i)
+else:
+   the_graph.connect(src.o,gain.i)
+
+the_graph.connect(gain.o,to_f32.i)
+the_graph.connect(to_f32.o,audioWin.i)
 the_graph.connect(audioWin.o,mfcc.i)
 the_graph.connect(mfcc.o,mfccWin.i)
 the_graph.connect(mfccWin.o,send.i)

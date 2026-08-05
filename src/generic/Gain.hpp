@@ -68,9 +68,10 @@ class Gain<q15_t, inputSamples, q15_t, inputSamples>
 	: public GenericNode<q15_t, inputSamples, q15_t, inputSamples>
 {
       public:
-	Gain(FIFOBase<q15_t> &src, FIFOBase<q15_t> &dst, float32_t gain = 1.0f)
+	Gain(FIFOBase<q15_t> &src, FIFOBase<q15_t> &dst, const GainParams &params)
 		: GenericNode<q15_t, inputSamples, q15_t, inputSamples>(src, dst)
 	{
+		float gain = params.gain;
 		while (fabsf(gain) >= 1.0f) {
 			gain /= 2.0f;
 			shift_++;

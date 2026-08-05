@@ -18,13 +18,6 @@ audioWin [label=<
   </TR>
 </TABLE>>];
 
-fft [label=<
-<TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-  <TR>
-    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">fft<BR/>(CFFT)</FONT></TD>
-  </TR>
-</TABLE>>];
-
 gain [label=<
 <TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
@@ -32,17 +25,31 @@ gain [label=<
   </TR>
 </TABLE>>];
 
+mfcc [label=<
+<TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">mfcc<BR/>(MFCC)</FONT></TD>
+  </TR>
+</TABLE>>];
 
-spectrogram [label=<
+mfccWin [label=<
+<TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">mfccWin<BR/>(SlidingBuffer)</FONT></TD>
+  </TR>
+</TABLE>>];
+
+
+send [label=<
 <TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
     <TD PORT="i"><FONT POINT-SIZE="12.0" COLOR="black">i</FONT></TD>
-    <TD ALIGN="CENTER" ROWSPAN="2"><FONT COLOR="black" POINT-SIZE="14.0">spectrogram<BR/>(Spectrogram)</FONT></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2"><FONT COLOR="black" POINT-SIZE="14.0">send<BR/>(SendToNetwork)</FONT></TD>
     <TD PORT="oev0"><FONT POINT-SIZE="12.0" COLOR="black">oev0</FONT></TD>
   </TR>
 <TR>
- 
-<TD></TD>
+<TD PORT="iev0"><FONT POINT-SIZE="12.0" COLOR="black">iev0</FONT></TD>
+
  
 <TD></TD></TR>
 
@@ -52,13 +59,6 @@ src [label=<
 <TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
     <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">src<BR/>(MicrophoneSource)</FONT></TD>
-  </TR>
-</TABLE>>];
-
-toComplex [label=<
-<TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-  <TR>
-    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">toComplex<BR/>(RealToComplex)</FONT></TD>
   </TR>
 </TABLE>>];
 
@@ -76,73 +76,82 @@ to_mono [label=<
   </TR>
 </TABLE>>];
 
-winLeft [label=<
+classify [label=<
 <TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
   <TR>
-    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">winLeft<BR/>(Hanning)</FONT></TD>
-  </TR>
-</TABLE>>];
-
-display [label=<
-<TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-  <TR>
-    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">display<BR/>(SpectrogramTextDisplay)</FONT></TD>
+    <TD ALIGN="CENTER" PORT="i"><FONT COLOR="black" POINT-SIZE="14.0">classify<BR/>(KWSClassify)</FONT></TD>
   </TR>
 </TABLE>>];
 
 
+kws [label=<
+<TABLE color="black" bgcolor="none" BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+  <TR>
+    <TD PORT="iev0"><FONT POINT-SIZE="12.0" COLOR="black">iev0</FONT></TD>
+    <TD ALIGN="CENTER" ROWSPAN="2"><FONT COLOR="black" POINT-SIZE="14.0">kws<BR/>(KWS)</FONT></TD>
+    <TD PORT="oev0"><FONT POINT-SIZE="12.0" COLOR="black">oev0</FONT></TD>
+  </TR>
+<TR>
+ 
+<TD></TD>
+<TD PORT="oev1"><FONT POINT-SIZE="12.0" COLOR="black">oev1</FONT></TD>
+</TR>
 
-src:i -> to_f32:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<sq15(320)>
+</TABLE>>];
+
+
+
+src:i -> to_mono:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<sq15(320)>
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >320</FONT>
 </TD></TR></TABLE>>
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >320</FONT>
 </TD></TR></TABLE>>]
 
-to_f32:i -> to_mono:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<sf32(320)>
+to_mono:i -> gain:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<q15(320)>
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >320</FONT>
 </TD></TR></TABLE>>
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >320</FONT>
 </TD></TR></TABLE>>]
 
-to_mono:i -> gain:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<f32(320)>
+gain:i -> to_f32:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<q15(320)>
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >320</FONT>
 </TD></TR></TABLE>>
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >320</FONT>
 </TD></TR></TABLE>>]
 
-gain:i -> audioWin:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<f32(320)>
+to_f32:i -> audioWin:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<f32(320)>
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >320</FONT>
 </TD></TR></TABLE>>
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >320</FONT>
 </TD></TR></TABLE>>]
 
-audioWin:i -> winLeft:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<f32(640)>
+audioWin:i -> mfcc:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<f32(640)>
 ,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >640</FONT>
 </TD></TR></TABLE>>
 ,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >640</FONT>
 </TD></TR></TABLE>>]
 
-winLeft:i -> toComplex:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<f32(1024)>
-,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1024</FONT>
+mfcc:i -> mfccWin:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<f32(10)>
+,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >10</FONT>
 </TD></TR></TABLE>>
-,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1024</FONT>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >10</FONT>
 </TD></TR></TABLE>>]
 
-toComplex:i -> fft:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<cf32(1024)>
-,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1024</FONT>
+mfccWin:i -> send:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<f32(490)>
+,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >490</FONT>
 </TD></TR></TABLE>>
-,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1024</FONT>
-</TD></TR></TABLE>>]
-
-fft:i -> spectrogram:i [style="solid",color="black",fontsize="12.0",fontcolor="black",label=<cf32(1024)>
-,headlabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1024</FONT>
-</TD></TR></TABLE>>
-,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >1024</FONT>
+,taillabel=<<TABLE BORDER="0" CELLPADDING="4"><TR><TD><FONT COLOR="blue" POINT-SIZE="12.0" >490</FONT>
 </TD></TR></TABLE>>]
 
 
 
-spectrogram:oev0 -> display:i [style="dashed",color="black",fontsize="12.0",fontcolor="black",label=<>
+send:oev0 -> kws:iev0 [style="dashed",color="black",fontsize="12.0",fontcolor="black",label=<>
+
+]
+kws:oev0 -> send:iev0 [style="dashed",color="black",fontsize="12.0",fontcolor="black",label=<>
+
+]
+kws:oev1 -> classify:i [style="dashed",color="black",fontsize="12.0",fontcolor="black",label=<>
 
 ]
 
