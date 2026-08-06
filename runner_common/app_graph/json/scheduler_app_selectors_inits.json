@@ -3,44 +3,40 @@
     "isTemplate": true,
     "selectors": []
   },
-  "Gain<q15_t,320,q15_t,320>": {
+  "CFFT<cf32,1024,cf32,1024>": {
     "isTemplate": true,
     "selectors": []
   },
-  "MFCC<float,640,float,10>": {
+  "Gain<float,320,float,320>": {
     "isTemplate": true,
     "selectors": []
   },
-  "SlidingBuffer<float,490,480>": {
+  "Spectrogram<cf32,1024>": {
     "isTemplate": true,
     "selectors": []
-  },
-  "SendToNetwork<float,490>": {
-    "isTemplate": true,
-    "selectors": [
-      "SEL_ACK_ID"
-    ]
   },
   "MicrophoneSource<sq15,320>": {
     "isTemplate": true,
     "selectors": []
   },
-  "Convert<q15_t,320,float,320>": {
+  "RealToComplex<float,1024,cf32,1024>": {
     "isTemplate": true,
     "selectors": []
   },
-  "InterleavedStereoToMono<sq15,320,q15_t,320>": {
+  "Convert<sq15,320,sf32,320>": {
     "isTemplate": true,
     "selectors": []
   },
-  "KWSClassify": {
-    "isTemplate": false,
+  "InterleavedStereoToMono<sf32,320,float,320>": {
+    "isTemplate": true,
     "selectors": []
   },
-  "KWS": {
+  "Hanning<float,640,float,1024>": {
+    "isTemplate": true,
+    "selectors": []
+  },
+  "SpectrogramTextDisplay": {
     "isTemplate": false,
-    "selectors": [
-      "SEL_ACK_ID"
-    ]
+    "selectors": []
   }
 }

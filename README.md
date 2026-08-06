@@ -24,7 +24,7 @@ Use the runner documentation to configure and build the generated application fo
 When you generate code for a graph, you need to select the runner and the board.
 
 ```bash
-python examples/recorder/create.py --runner zephyr --board fvp_cs300
+uv run examples/recorder/create.py --runner zephyr --board fvp_cs300
 ```
 
 The CMSIS-Stream scheduler will be generated in `runner_common/app_graph`. You'll then have to build the right runner. Even if the scheduler is generated in common, it cannot be built for all runners if it uses nodes that are runner- or board-specific.
@@ -36,12 +36,12 @@ See [Configuring and generating an application](documentation/configuring_applic
 ## Network
 
 The demo using a TFLite network currently uses only one network.
-The format of this network depends on the target : posix or Ethos.
-The network is selected in `app.py` when running the python script `create.py` for a given application.
+The format of this network depends on the target: POSIX or Ethos-U.
+The network is selected in `app.py` when running the Python script `create.py` for a given application.
 
-The demos have differences :
+The demos differ because:
 
 * Computations use different kernel implementations in TFLite
-* real-time may not always be respected so that the network do not always see the same audio segment depending on the platform
+* Real-time constraints may not always be met, so the network may receive different audio segments on different platforms
 
 For those reasons, the recognized keywords may be a bit different according to the platform.

@@ -4,15 +4,16 @@
 
 The FVP simulation is __very__ slow. You have to wait for a few minutes before you can see a recognized keyword printed on stdout.
 
-At the end of the simulation, an error will occur that is normal:
-* The simulation reached the end of the audio file
-* An underflow error is generated because the VSI driver is no more generating audio samples
-* By default, the simulation is generating a panic when an error is occuring in the stream processing (it can be changed)
+At the end of the simulation, an expected error occurs:
 
-The recognition is having difficulties to distinguish `no` and `go`.
+* The simulation reached the end of the audio file
+* An underflow error is generated because the VSI driver no longer produces audio samples
+* By default, a stream-processing error generates a panic; this policy can be changed
+
+Recognition has difficulty distinguishing `no` and `go`.
 This will require some tuning in the audio processing.
 
-Current simulation is generating (Zephyr):
+The current Zephyr simulation produces:
 
 ```
 [00:00:01.680,000] <inf> cmsisstream: KWS Classify: yes
@@ -46,6 +47,6 @@ Current simulation is generating (Zephyr):
 
 ## On board
 
-The recognition is not working very weel.
-The dataprocessing pipeline has been checked with the `debug` graph and it works.
-THe problem is likely to be due to the sound from the microphone. It may need some tuning : gain etc ...
+Recognition does not yet work reliably on the board.
+The data-processing pipeline has been checked with the `debug` graph and works correctly.
+The likely cause is the microphone input, which may require gain or other audio-front-end tuning.

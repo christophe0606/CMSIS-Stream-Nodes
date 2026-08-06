@@ -6,13 +6,12 @@ For the architecture behind these steps, see [How the project works](principles.
 
 ## Prepare the Python environment
 
-The generation scripts require the CMSIS-Stream Python package. Activate the workspace virtual environment before running them. For the current workspace on Windows:
+The generation scripts require the packages listed in `requirements.txt`. Prepare the workspace environment and run the scripts with `uv` from the repository root:
 
 ```powershell
-.\.venv\Scripts\Activate.ps1
+uv venv
+uv pip install -r requirements.txt
 ```
-
-Run the commands below from the repository root.
 
 ## Select the runner and board first
 
@@ -24,7 +23,15 @@ from examples.common.app import configure_app_from_args, mk_app
 config = configure_app_from_args()
 ```
 
-`configure_app_from_args()` reads `--runner` and `--board`, validates them, and stores the selection where node descriptions can access it. This call must happen before constructing nodes because a node may choose its C/C++ implementation from the selected target.
+`configure_app_from_args()` reads `--runner` and `--board`, validates each option, and stores the selection where node descriptions can access it. It does not validate every runner/board pairing, so use a supported combination:
+
+| Runner | Boards |
+| --- | --- |
+| `posix` | `Windows`, `Mac`, or `Linux` (normally detected from the host) |
+| `zephyr` | `fvp_cs300`, `AlifE7`, or the default Zephyr board configuration when `--board` is omitted |
+| `cmsis` | `fvp_cs300`, `AlifE7`, or the default CMSIS board configuration when `--board` is omitted |
+
+This call must happen before constructing nodes because a node may choose its C/C++ implementation from the selected target.
 
 For example, the generic `MicrophoneSource` description reads the selected runner and chooses one of these implementations:
 
@@ -36,27 +43,27 @@ Typical recorder generation commands are:
 
 ```powershell
 # POSIX; Windows, Mac, or Linux is detected from the host
-python examples/recorder/create.py --runner posix
+uv run examples/recorder/create.py --runner posix
 
 # Zephyr on the Corstone-300 FVP
-python examples/recorder/create.py --runner zephyr --board fvp_cs300
+uv run examples/recorder/create.py --runner zephyr --board fvp_cs300
 
 # CMSIS-RTOS on the Corstone-300 FVP
-python examples/recorder/create.py --runner cmsis --board fvp_cs300
+uv run examples/recorder/create.py --runner cmsis --board fvp_cs300
 
 # CMSIS-RTOS on Alif Ensemble E7
-python examples/recorder/create.py --runner cmsis --board AlifE7
+uv run examples/recorder/create.py --runner cmsis --board AlifE7
 ```
 
 On POSIX, `--board` may be omitted and is derived from the host. For an embedded runner, specify the board explicitly when the application needs board-specific hardware support.
 
 ## Define the graph
 
-The recorder creates a graph with a microphone source and debug sink:
+The recorder creates a graph with a microphone source and a sink that discards each captured block:
 
 ```python
 from cmsis_stream.cg.scheduler import Graph, CType, SINT16
-from nodes.generic import DebugSink, MicrophoneSource
+from nodes.generic import MicrophoneSource, NullSink
 
 the_graph = Graph()
 
@@ -65,7 +72,7 @@ mic_sample_rate = 16000
 block_size = mic_sample_rate // 10
 
 src = MicrophoneSource("src", sample_type, block_size)
-sink = DebugSink("sink", sample_type, block_size)
+sink = NullSink("sink", sample_type, block_size)
 
 the_graph.connect(src.o, sink.i)
 ```
@@ -86,7 +93,7 @@ mk_app(
     globals={
         "MIC_BLOCK_SIZE": block_size * sample_type.bytes,
         "MIC_SAMPLE_RATE": mic_sample_rate,
-        "MIC_CHANNELS": 1,
+        "MIC_CHANNELS": 2,
         "MIC_FRAMES_PER_BUFFER": 0,
         "MIC_SAMPLE_SIZE": sample_type.bytes * 8,
         "APP_SRC_VALUE": 2,

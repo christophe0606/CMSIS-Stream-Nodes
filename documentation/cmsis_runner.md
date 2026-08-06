@@ -22,8 +22,8 @@ Audio on FVP uses the `AVH_FVP` pack. It is not yet available from the pack repo
 
 Set `path` to the location of your AVH repository clone.
 
-On FVP, use the corresponding `fvp_config.txt` fle provided in the board folder (for instance `boards\cmsis\fvp_cs300\fvp_config.txt`).
+On FVP, use the corresponding `fvp_config.txt` file provided in the board folder (for instance `boards\cmsis\fvp_cs300\fvp_config.txt`).
 
-On Windows, and dependign on the shell used, you may need to use `winpty` to call the FVP otherwise some part of the output may not be flushed.
+On Windows, depending on the shell, you may need to invoke the FVP through `winpty`; otherwise, some output may not be flushed.
 
 [Back to the project README](../README.md)

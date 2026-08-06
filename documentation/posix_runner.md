@@ -24,16 +24,16 @@ The following commands assume that the packages have been installed in `C:/cmake
 
 ```powershell
 cmake -S posix_runner -B posix_runner/build -DCMSIS_STREAM_INSTALL_PREFIX=C:/cmake_packages
-cmake --build posix_runner/build
+cmake --build posix_runner/build --config Release
 ```
 
-If you need TFLite for micro, you need to set some additional options:
+If you need TensorFlow Lite for Microcontrollers, set the following additional options:
 
+```powershell
+cmake -S posix_runner -B posix_runner/build -DUSE_TFLITE=ON -DTFLITE_PATH=C:/path/to/tflite-micro -DCMSIS_STREAM_INSTALL_PREFIX=C:/cmake_packages
 ```
-cmake -S posix_runner -B posix_runner/build -DUSE_TFLITE=ON -DTFLITE_PATH="" -DCMSIS_STREAM_INSTALL_PREFIX=C:/cmake_packages
-```
- * `USE_TFLITE` enable a cmake build of TFLite for micro
- * `TFLITE_PATH` is the path to your clone of TF Lite for micro
+* `USE_TFLITE` enables the CMake build of TensorFlow Lite for Microcontrollers.
+* `TFLITE_PATH` is the path to the root of your `tflite-micro` checkout.
 
 Run the application:
 

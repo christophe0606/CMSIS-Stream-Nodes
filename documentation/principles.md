@@ -39,7 +39,7 @@ An application uses both the CMSIS-Stream Python API and the helpers in `example
 ```python
 from cmsis_stream.cg.scheduler import Graph, CType, SINT16
 from examples.common.app import configure_app_from_args, mk_app
-from nodes.generic import DebugSink, MicrophoneSource
+from nodes.generic import MicrophoneSource, NullSink
 
 config = configure_app_from_args()
 
@@ -48,7 +48,7 @@ sample_type = CType(SINT16)
 block_size = 1600
 
 source = MicrophoneSource("src", sample_type, block_size)
-sink = DebugSink("sink", sample_type, block_size)
+sink = NullSink("sink", sample_type, block_size)
 graph.connect(source.o, sink.i)
 
 mk_app(graph, config=config)
@@ -56,7 +56,7 @@ mk_app(graph, config=config)
 
 CMSIS-Stream provides `Graph`, data types, base node classes, ports, connections, schedule computation, and C/C++ code generation. This project provides the application configuration helpers and reusable nodes.
 
-`configure_app_from_args()` analyzes the `--runner` and `--board` command-line options, validates them, and stores the selected target in the shared application configuration. On POSIX, it derives the board from the host operating system when `--board` is omitted. Node descriptions created afterward can call `get_app_config()` and use the selected runner and board to choose a shared, runner-specific, or board-specific C/C++ implementation. For example, `MicrophoneSource.folder` returns the selected runner name. The same configuration is passed to `mk_app()` so that generation records the matching hardware target. This is why target configuration must happen before nodes are constructed.
+`configure_app_from_args()` analyzes the `--runner` and `--board` command-line options, validates each option, and stores the selected target in the shared application configuration. It does not validate every runner/board pairing; use a board supported by the selected runner. On POSIX, it derives the board from the host operating system when `--board` is omitted. Node descriptions created afterward can call `get_app_config()` and use the selected runner and board to choose a shared, runner-specific, or board-specific C/C++ implementation. For example, `MicrophoneSource.folder` returns the selected runner name. The same configuration is passed to `mk_app()` so that generation records the matching hardware target. This is why target configuration must happen before nodes are constructed.
 
 A CMSIS-Stream graph can mix two kinds of connections:
 
@@ -99,7 +99,7 @@ The distinction is about the node's meaning, not whether every line of implement
 Each example provides a generation script such as `examples/recorder/create.py`. Select a runner and board on its command line:
 
 ```powershell
-python examples/recorder/create.py --runner zephyr --board fvp_cs300
+uv run examples/recorder/create.py --runner zephyr --board fvp_cs300
 ```
 
 `configure_app_from_args()` performs the command-line selection described above. `mk_app()` then configures the CMSIS-Stream generator and writes the result to `runner_common/app_graph/`. See [Configuring and generating an application](configuring_application.md) for a complete walkthrough based on the recorder.
@@ -152,11 +152,11 @@ if params:
 self.addVariableArg(f"params->{name}")
 ```
 
-The recorder creates a microphone node named `src` and a debug sink named `sink`:
+The recorder creates a microphone node named `src` and a null sink named `sink`:
 
 ```python
 src = MicrophoneSource("src", sample_type, block_size)
-sink = DebugSink("sink", sample_type, block_size)
+sink = NullSink("sink", sample_type, block_size)
 ```
 
 Because `src` has a parameter and needs hardware, generation creates a parameter type for it. `sink` has neither parameters nor hardware access, so it does not need an `AppParams` member. The relevant part of the generated `app_params.h` is:
@@ -233,7 +233,7 @@ mk_app(
     graph,
     globals={
         "MIC_SAMPLE_RATE": 16000,
-        "MIC_CHANNELS": 1,
+        "MIC_CHANNELS": 2,
         "MIC_BLOCK_SIZE": 3200,
     },
     config=config,
