@@ -3,7 +3,7 @@
 # dependencies = ["pyserial>=3.5"]
 # ///
 
-"""Display framed SpectrogramTextDisplay output from a serial port."""
+"""Display framed SpectrogramTextDisplay output from serial or stdin."""
 
 import argparse
 import math
@@ -184,12 +184,15 @@ class QuitKey:
 
 def parse_args():
     parser = argparse.ArgumentParser(
-        description="Display the binary spectrogram stream from a serial port."
+        description="Display a binary spectrogram stream from serial or stdin."
     )
     parser.add_argument(
         "port",
         nargs="?",
-        help="Serial port; when omitted, the script asks which port to use",
+        help=(
+            "Serial port, or '-' to read a process stream from stdin; "
+            "when omitted, the script asks which serial port to use"
+        ),
     )
     parser.add_argument("--baudrate", type=int, default=115200)
     parser.add_argument(
@@ -225,18 +228,25 @@ def choose_port():
 
 def main():
     args = parse_args()
-    port = args.port or choose_port()
     parser = FrameParser()
     display = SpectrogramDisplay(args.refresh_ms)
 
     try:
-        print(f"Connecting to {port} at {args.baudrate} baud...")
-        with serial.Serial(port, args.baudrate, timeout=0.05) as stream:
-            with QuitKey() as quit_key:
-                while not quit_key.pressed():
-                    data = stream.read(stream.in_waiting or 1)
-                    for _sequence, amplitudes in parser.feed(data):
-                        display.add(amplitudes)
+        if args.port == "-":
+            stream = sys.stdin.buffer
+            read = getattr(stream, "read1", stream.read)
+            while data := read(4096):
+                for _sequence, amplitudes in parser.feed(data):
+                    display.add(amplitudes)
+        else:
+            port = args.port or choose_port()
+            print(f"Connecting to {port} at {args.baudrate} baud...")
+            with serial.Serial(port, args.baudrate, timeout=0.05) as stream:
+                with QuitKey() as quit_key:
+                    while not quit_key.pressed():
+                        data = stream.read(stream.in_waiting or 1)
+                        for _sequence, amplitudes in parser.feed(data):
+                            display.add(amplitudes)
     except KeyboardInterrupt:
         pass
     finally:
