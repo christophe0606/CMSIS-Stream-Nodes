@@ -8,7 +8,7 @@ if REPO_ROOT.exists() and path_text not in sys.path:
 
 from cmsis_stream.cg.scheduler import Graph,CType,SINT16
 from examples.common.app import configure_app_from_args, mk_app
-from nodes.generic import DebugSink, DebugSource, MicrophoneSource
+from nodes.generic import DebugSource, MicrophoneSource, NullSink
 
 config = configure_app_from_args()
 
@@ -21,9 +21,9 @@ mic_channels = 2
 mic_frames_per_buffer = 0 # only used for posix portaudio
 src_value = 2
 
-#src = DebugSource("src", sample_type, block_size,params={"value": ("APP_SRC_VALUE", sample_type)})
+#src = DebugSource("src", sample_type, block_size)
 src = MicrophoneSource("src", sample_type, block_size)
-sink = DebugSink("sink", sample_type, block_size)
+sink = NullSink("sink", sample_type, block_size)
 
 the_graph.connect(src.o, sink.i)
 

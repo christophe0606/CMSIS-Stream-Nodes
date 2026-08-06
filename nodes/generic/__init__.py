@@ -1,6 +1,7 @@
 from .BufferSink import BufferSink
 from .BufferSource import BufferSource
 from .DebugSink import DebugSink
+from .DebugSendToNetwork import DebugSendToNetwork
 from .DebugSource import DebugSource
 from .MicrophoneSource import MicrophoneSource
 from .Convert import Convert
@@ -18,11 +19,13 @@ from .Spectrogram import Spectrogram
 from .NullSink import NullSink
 from .SpectrogramTextDisplay import SpectrogramTextDisplay
 from .InterleavedStereoToMono import InterleavedStereoToMono
+from .DebugKWSClassify import DebugKWSClassify
 
 __all__ = ["Convert",
            "BufferSink",
            "BufferSource", 
            "DebugSink", 
+           "DebugSendToNetwork",
            "DebugSource", 
            "MicrophoneSource",
            "SlidingBuffer",
@@ -38,4 +41,5 @@ __all__ = ["Convert",
            "Spectrogram",
            "NullSink",
            "SpectrogramTextDisplay",
-           "InterleavedStereoToMono"]
+           "InterleavedStereoToMono",
+           "DebugKWSClassify"]

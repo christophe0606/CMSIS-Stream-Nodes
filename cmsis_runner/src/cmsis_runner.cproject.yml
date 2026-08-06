@@ -13,6 +13,7 @@ project:
     - group: Nodes
       files:
         - file: ../../src/csrc/classify.c
+        - file: ../../src/csrc/debug_audio.c
     - group: NN Model
       files:
         - file: ../../networks/$NNNetwork$

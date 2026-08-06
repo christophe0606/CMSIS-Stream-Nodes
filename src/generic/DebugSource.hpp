@@ -1,10 +1,11 @@
 #pragma once
 
+#include "debug_audio.h"
 #include "GenericNodes.hpp"
-#include "app_params.h"
 #include "cg_enums.h"
 
 #include <algorithm>
+#include <cstddef>
 
 namespace recorder {
 
@@ -16,23 +17,20 @@ class DebugSource final : public arm_cmsis_stream::GenericSource<OUT, outputSamp
     {
     }
 
-    DebugSource(arm_cmsis_stream::FIFOBase<OUT> &dst, const DebugSourceParams &params)
-        : arm_cmsis_stream::GenericSource<OUT, outputSamples>(dst),
-          hw_(params.hw_),
-          value_(static_cast<OUT>(params.value))
-    {
-    }
-
     int run() final
     {
         OUT *output = this->getWriteBuffer();
-        std::fill(output, output + outputSamples, value_);
+        const std::size_t remaining = DEBUG_AUDIO_SAMPLE_COUNT - sampleOffset_;
+        const std::size_t copied = std::min<std::size_t>(outputSamples, remaining);
+
+        std::copy_n(debug_audio_samples + sampleOffset_, copied, output);
+        std::fill(output + copied, output + outputSamples, static_cast<OUT>(0));
+        sampleOffset_ += copied;
         return CG_SUCCESS;
     }
 
   private:
-    HardwareParams hw_{};
-    OUT value_{};
+    std::size_t sampleOffset_ = 0;
 };
 
 } // namespace recorder

@@ -43,3 +43,9 @@ Current simulation is generating (Zephyr):
 
 [00:00:11.399,000] <dbg> cmsisstream: stopAudio: Stopping microphone source
 ```
+
+## On board
+
+The recognition is not working very weel.
+The dataprocessing pipeline has been checked with the `debug` graph and it works.
+THe problem is likely to be due to the sound from the microphone. It may need some tuning : gain etc ...
