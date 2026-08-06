@@ -11,6 +11,13 @@ The project adds:
 
 Read [How the project works](documentation/principles.md) for the complete graph-description, code-generation, parameter, hardware, runtime-thread, event, and application-integration model.
 
+## Examples
+
+* [Recorder](examples/recorder/README.md) — Captures microphone audio and sends each block to a null sink to demonstrate a minimal streaming application.
+* [Spectrogram](examples/spectrogram/README.md) — Captures microphone audio, computes a spectrogram, and displays it from a serial or POSIX stream.
+* [Keyword spotting](examples/kws/README.md) — Runs an MFCC and neural-network pipeline that recognizes keywords from audio.
+* [Debug](examples/debug/README.md) — Uses a known audio test pattern to compare keyword-spotting computations across POSIX and CMSIS/Ethos targets.
+
 ## Runners
 
 Use the runner documentation to configure and build the generated application for a target environment:
